@@ -51,4 +51,48 @@ public class GestionnaireFinance {
     public boolean removeDepenseById(int id) {
         return this.depenses.removeIf(d -> d.getId() == id);
     }
+    
+       /**
+     * Finds a Depense by its ID and updates its properties.
+     * @param id The ID of the expense to update.
+     * @param newDescription The new description for the expense.
+     * @param newDate The new date for the expense.
+     * @param newMontant The new amount for the expense.
+     * @param newCategorie The new category for the expense.
+     * @return true if the update was successful, false if the ID was not found.
+     */
+    public boolean modifierDepense(int id, String newDescription, java.time.LocalDate newDate, double newMontant, CategorieDepense newCategorie) {
+        for (Depense d : depenses) {
+            if (d.getId() == id) {
+                d.setDescription(newDescription);
+                d.setDateOperation(newDate);
+                d.setMontant(newMontant);
+                d.setCategorie(newCategorie);
+                return true; // Update successful
+            }
+        }
+        return false; // ID not found
+    }
+
+    /**
+     * Finds a Revenue by its ID and updates its properties.
+     * @param id The ID of the revenue to update.
+     * @param newDescription The new description for the revenue.
+     * @param newDate The new date for the revenue.
+     * @param newMontant The new amount for the revenue.
+     * @param newSource The new source list for the revenue.
+     * @return true if the update was successful, false if the ID was not found.
+     */
+    public boolean modifierRevenue(int id, String newDescription, java.time.LocalDate newDate, double newMontant, java.util.List<SourceRevenue> newSource) {
+        for (Revenue r : revenues) {
+            if (r.getId() == id) {
+                r.setDescription(newDescription);
+                r.setDateOperation(newDate);
+                r.setMontant(newMontant);
+                r.setSource(newSource);
+                return true; // Update successful
+            }
+        }
+        return false; // ID not found
+    }
 }
