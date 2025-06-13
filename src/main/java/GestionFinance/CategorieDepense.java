@@ -1,5 +1,7 @@
 package GestionFinance;
-public class CategorieDepense {
+import java.io.Serializable;
+
+public class CategorieDepense implements Serializable {
 
     private String name;
     private String description;

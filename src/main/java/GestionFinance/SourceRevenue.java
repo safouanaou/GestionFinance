@@ -1,5 +1,8 @@
 package GestionFinance;
-public class SourceRevenue {
+import java.io.Serializable;
+
+
+public class SourceRevenue implements Serializable {
     private String name;
     private String description;
 

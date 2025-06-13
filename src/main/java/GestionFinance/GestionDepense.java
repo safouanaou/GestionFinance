@@ -1,7 +1,8 @@
 package GestionFinance;
 import java.time.LocalDate;
+import java.io.Serializable;
 
-public class GestionDepense {
+public class GestionDepense implements Serializable {
     private int id;
     private static int counter = 0;
     private String description;
@@ -58,5 +59,9 @@ public class GestionDepense {
             throw new IllegalArgumentException("Amount must be non-negative");
         }
         this.montant = montant;
+    }
+    
+    public static void setCounter(int newCounter) {
+        counter = newCounter;
     }
 }

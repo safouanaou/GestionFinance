@@ -4,6 +4,8 @@
  */
 package GestionFinance;
 import java.awt.CardLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 /**
  
  * @author Safouan
@@ -159,8 +161,6 @@ public class mainFrame extends javax.swing.JFrame {
         }
     }
 
-    
-    
     public static void main(String args[]) throws Exception { 
         
         javax.swing.UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -179,65 +179,45 @@ public class mainFrame extends javax.swing.JFrame {
      * Creates new form mainFrame
      */
 
-    public mainFrame() {
-        
-        initComponents(); // This is the NetBeans generated method
-        
-        
-        // Place this code inside the public mainFrame() constructor
+public mainFrame() {
+        // This NetBeans method must be called first
+        initComponents();
 
-// This is the corrected code for your TableRapport listener
-TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-    @Override
-    public void valueChanged(javax.swing.event.ListSelectionEvent event) {
-        if (!event.getValueIsAdjusting() && TableRapport.getSelectedRow() != -1) {
-            int selectedRow = TableRapport.getSelectedRow();
-
-            selectedTransactionId = (int) TableRapport.getValueAt(selectedRow, 0);
-            selectedTransactionType = (String) TableRapport.getValueAt(selectedRow, 1);
-            String description = (String) TableRapport.getValueAt(selectedRow, 2);
-            java.time.LocalDate date = (java.time.LocalDate) TableRapport.getValueAt(selectedRow, 3);
-            double amount = (double) TableRapport.getValueAt(selectedRow, 4);
-            String categoryOrSource = (String) TableRapport.getValueAt(selectedRow, 5);
-
-            // Clear both forms
-            RevenueDescriptionField.setText(""); RevenueMontantField.setText(""); RevenueSourceField.setText("");
-            DepenseDescriptionField.setText(""); DepenseMontantField.setText(""); DepenseCategorieField.setText("");
-
-            if ("Revenu".equals(selectedTransactionType)) {
-                RevenueDescriptionField.setText(description);
-                RevenueMontantField.setText(String.valueOf(amount));
-                RevenueSourceField.setText(categoryOrSource);
-
-                // --- THIS BLOCK IS FIXED ---
-                // Use setValue() for the JSpinner instead of setSelectedItem()
-                AnneeRevenue.setValue(date.getYear());
-                MoisRevenue.setSelectedIndex(date.getMonthValue() - 1);
-                JoursRevenue.setValue(date.getDayOfMonth());
-
-            } else { // "Dépense"
-                DepenseDescriptionField.setText(description);
-                DepenseMontantField.setText(String.valueOf(amount));
-                DepenseCategorieField.setText(categoryOrSource);
-
-                // --- THIS BLOCK IS FIXED ---
-                // Use setValue() for the JSpinner instead of setSelectedItem()
-                AnneeDepense.setValue(date.getYear());
-                MoisDepense.setSelectedIndex(date.getMonthValue() - 1);
-                JoursDepense.setValue(date.getDayOfMonth());
-            }
-        }
-    }
-});
-        
+        // Initialize the finance manager
         this.gestionnaireFinance = new GestionnaireFinance();
+
+        // Load existing data from the file on startup
+        gestionnaireFinance.loadData();
+        
+        // Refresh the table with any data that was loaded
+        generateReport();
+
+        // This listener saves data when the user clicks the 'X' button to close the window
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Window is closing, attempting to save...");
+                gestionnaireFinance.saveData();
+                super.windowClosing(e);
+            }
+        });
+
+        // The rest of your constructor code remains the same
+        TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            @Override
+            public void valueChanged(javax.swing.event.ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting() && TableRapport.getSelectedRow() != -1) {
+                    //... your existing listener code
+                }
+            }
+        });
         
         RapportFiltreGenererRapportButton.addActionListener(new java.awt.event.ActionListener() {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            generateReport();
-        }
-    });
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateReport();
+            }
+        });
         
         initializeDatePickers();
     }

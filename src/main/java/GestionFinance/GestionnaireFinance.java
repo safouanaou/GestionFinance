@@ -3,11 +3,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.io.*;
+import java.util.stream.Stream;
 
 public class GestionnaireFinance {
 
     private List<Revenue> revenues;
     private List<Depense> depenses;
+    private static final String DATA_FILE = "finance.in"; // Use the .in extension
 
     public GestionnaireFinance() {
         this.revenues = new ArrayList<>();
@@ -52,15 +61,7 @@ public class GestionnaireFinance {
         return this.depenses.removeIf(d -> d.getId() == id);
     }
     
-       /**
-     * Finds a Depense by its ID and updates its properties.
-     * @param id The ID of the expense to update.
-     * @param newDescription The new description for the expense.
-     * @param newDate The new date for the expense.
-     * @param newMontant The new amount for the expense.
-     * @param newCategorie The new category for the expense.
-     * @return true if the update was successful, false if the ID was not found.
-     */
+
     public boolean modifierDepense(int id, String newDescription, java.time.LocalDate newDate, double newMontant, CategorieDepense newCategorie) {
         for (Depense d : depenses) {
             if (d.getId() == id) {
@@ -74,15 +75,6 @@ public class GestionnaireFinance {
         return false; // ID not found
     }
 
-    /**
-     * Finds a Revenue by its ID and updates its properties.
-     * @param id The ID of the revenue to update.
-     * @param newDescription The new description for the revenue.
-     * @param newDate The new date for the revenue.
-     * @param newMontant The new amount for the revenue.
-     * @param newSource The new source list for the revenue.
-     * @return true if the update was successful, false if the ID was not found.
-     */
     public boolean modifierRevenue(int id, String newDescription, java.time.LocalDate newDate, double newMontant, java.util.List<SourceRevenue> newSource) {
         for (Revenue r : revenues) {
             if (r.getId() == id) {
@@ -95,4 +87,52 @@ public class GestionnaireFinance {
         }
         return false; // ID not found
     }
+
+
+    public void saveData() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            out.writeInt(revenues.size());
+            for (Revenue revenue : revenues) {
+                out.writeObject(revenue);
+            }
+
+            out.writeInt(depenses.size());
+            for (Depense depense : depenses) {
+                out.writeObject(depense);
+            }
+            System.out.println("Data saved successfully to " + DATA_FILE);
+        } catch (IOException e) {
+            System.err.println("Error saving data: " + e.getMessage());
+        }
+    }
+
+    public void loadData() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            int revenueCount = in.readInt();
+            this.revenues.clear();
+            for (int i = 0; i < revenueCount; i++) {
+                revenues.add((Revenue) in.readObject());
+            }
+
+            int depenseCount = in.readInt();
+            this.depenses.clear();
+            for (int i = 0; i < depenseCount; i++) {
+                depenses.add((Depense) in.readObject());
+            }
+            System.out.println("Data loaded successfully from " + DATA_FILE);
+            
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Could not load data, starting fresh: " + e.getMessage());
+            this.revenues = new ArrayList<>();
+            this.depenses = new ArrayList<>();
+        }
+
+        int maxId = Stream.concat(revenues.stream(), depenses.stream())
+                          .mapToInt(GestionDepense::getId)
+                          .max()
+                          .orElse(0);
+        GestionDepense.setCounter(maxId);
+    }
+
 }
+
