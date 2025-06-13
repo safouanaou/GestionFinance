@@ -25,15 +25,8 @@ public class mainFrame extends javax.swing.JFrame {
     String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"}; // <- Declaration of 'months'
 
 
-    // --- Setup for the input forms ---
-    AnneeRevenue.removeAllItems();
-    AnneeDepense.removeAllItems();
-    for (int i = 1990; i <= 2030; i++) {
-        AnneeRevenue.addItem(String.valueOf(i));
-        AnneeDepense.addItem(String.valueOf(i));
-    }
-    AnneeRevenue.setSelectedItem(String.valueOf(currentYear));
-    AnneeDepense.setSelectedItem(String.valueOf(currentYear));
+    AnneeRevenue.setModel(new javax.swing.SpinnerNumberModel(currentYear, 1990, 2030, 1));
+    AnneeDepense.setModel(new javax.swing.SpinnerNumberModel(currentYear, 1990, 2030, 1));
 
     MoisRevenue.removeAllItems();
     MoisDepense.removeAllItems();
@@ -83,14 +76,14 @@ public class mainFrame extends javax.swing.JFrame {
             }
         };
 
-        if ("All".equals(showChoice) || "Revenues".equals(showChoice)) {
+        if ("Tout".equals(showChoice) || "Revenues".equals(showChoice)) {
             for (Revenue r : monthlyRevenues) {
                 String sourceNames = r.getSource().stream().map(SourceRevenue::getName).collect(java.util.stream.Collectors.joining(", "));
                 model.addRow(new Object[]{r.getId(), "Revenu", r.getDescription(), r.getDateOperation(), r.getMontant(), sourceNames});
             }
         }
 
-        if ("All".equals(showChoice) || "Dépenses".equals(showChoice)) {
+        if ("Tout".equals(showChoice) || "Dépenses".equals(showChoice)) {
             for (Depense d : monthlyExpenses) {
                 model.addRow(new Object[]{d.getId(), "Dépense", d.getDescription(), d.getDateOperation(), d.getMontant(), d.getCategorie().getName()});
             }
@@ -193,45 +186,43 @@ public class mainFrame extends javax.swing.JFrame {
         
         // Place this code inside the public mainFrame() constructor
 
+// This is the corrected code for your TableRapport listener
 TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
     @Override
     public void valueChanged(javax.swing.event.ListSelectionEvent event) {
-        // This condition prevents the code from running twice for a single click
         if (!event.getValueIsAdjusting() && TableRapport.getSelectedRow() != -1) {
             int selectedRow = TableRapport.getSelectedRow();
 
-            // Get data from the table model using the column index
-            selectedTransactionId = (int) TableRapport.getValueAt(selectedRow, 0); // Hidden ID from column 0
+            selectedTransactionId = (int) TableRapport.getValueAt(selectedRow, 0);
             selectedTransactionType = (String) TableRapport.getValueAt(selectedRow, 1);
             String description = (String) TableRapport.getValueAt(selectedRow, 2);
             java.time.LocalDate date = (java.time.LocalDate) TableRapport.getValueAt(selectedRow, 3);
             double amount = (double) TableRapport.getValueAt(selectedRow, 4);
             String categoryOrSource = (String) TableRapport.getValueAt(selectedRow, 5);
 
-            // Clear both forms before populating them with new data
-            RevenueSourceField.setText("");
-            RevenueMontantField.setText("");
-            RevenueDescriptionField.setText("");
-            DepenseDescriptionField.setText("");
-            DepenseMontantField.setText("");
-            DepenseCategorieField.setText("");
+            // Clear both forms
+            RevenueDescriptionField.setText(""); RevenueMontantField.setText(""); RevenueSourceField.setText("");
+            DepenseDescriptionField.setText(""); DepenseMontantField.setText(""); DepenseCategorieField.setText("");
 
-            // Populate the correct form based on the transaction type
             if ("Revenu".equals(selectedTransactionType)) {
-                RevenueSourceField.setText(description);
+                RevenueDescriptionField.setText(description);
                 RevenueMontantField.setText(String.valueOf(amount));
-                RevenueDescriptionField.setText(categoryOrSource);
-                // Set the date controls for the revenue form
-                AnneeRevenue.setSelectedItem(String.valueOf(date.getYear()));
+                RevenueSourceField.setText(categoryOrSource);
+
+                // --- THIS BLOCK IS FIXED ---
+                // Use setValue() for the JSpinner instead of setSelectedItem()
+                AnneeRevenue.setValue(date.getYear());
                 MoisRevenue.setSelectedIndex(date.getMonthValue() - 1);
                 JoursRevenue.setValue(date.getDayOfMonth());
 
-            } else { // This handles "Dépense"
+            } else { // "Dépense"
                 DepenseDescriptionField.setText(description);
                 DepenseMontantField.setText(String.valueOf(amount));
                 DepenseCategorieField.setText(categoryOrSource);
-                // Set the date controls for the expense form
-                AnneeDepense.setSelectedItem(String.valueOf(date.getYear()));
+
+                // --- THIS BLOCK IS FIXED ---
+                // Use setValue() for the JSpinner instead of setSelectedItem()
+                AnneeDepense.setValue(date.getYear());
                 MoisDepense.setSelectedIndex(date.getMonthValue() - 1);
                 JoursDepense.setValue(date.getDayOfMonth());
             }
@@ -277,7 +268,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         DatePanel = new javax.swing.JPanel();
         JoursRevenue = new javax.swing.JSpinner();
         MoisRevenue = new javax.swing.JComboBox<>();
-        AnneeRevenue = new javax.swing.JComboBox<>();
+        AnneeRevenue = new javax.swing.JSpinner();
         RevenueMontantField = new javax.swing.JTextField();
         RevenueButtons = new javax.swing.JPanel();
         AjoutRevenueButton = new javax.swing.JButton();
@@ -293,7 +284,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         DepenseDatePanel = new javax.swing.JPanel();
         JoursDepense = new javax.swing.JSpinner();
         MoisDepense = new javax.swing.JComboBox<>();
-        AnneeDepense = new javax.swing.JComboBox<>();
+        AnneeDepense = new javax.swing.JSpinner();
         DepenseMontantField = new javax.swing.JTextField();
         RevenueButtons1 = new javax.swing.JPanel();
         AjoutDepenseButton = new javax.swing.JButton();
@@ -463,14 +454,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         });
         DatePanel.add(MoisRevenue);
 
-        AnneeRevenue.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-        AnneeRevenue.setMinimumSize(new java.awt.Dimension(64, 22));
-        AnneeRevenue.setPreferredSize(new java.awt.Dimension(80, 26));
-        AnneeRevenue.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AnneeRevenueActionPerformed(evt);
-            }
-        });
+        AnneeRevenue.setPreferredSize(new java.awt.Dimension(70, 26));
         DatePanel.add(AnneeRevenue);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -610,8 +594,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         });
         DepenseDatePanel.add(MoisDepense);
 
-        AnneeDepense.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "Item 2", "Item 3", "Item 4" }));
-        AnneeDepense.setPreferredSize(new java.awt.Dimension(80, 26));
+        AnneeDepense.setPreferredSize(new java.awt.Dimension(70, 26));
         DepenseDatePanel.add(AnneeDepense);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -715,7 +698,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         RapportFiltreAfficherTout.setText("Show");
         ReportFilterPanel.add(RapportFiltreAfficherTout);
 
-        RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Revenues", "Expenses", " " }));
+        RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tout\t", "Revenues", "Depenses", " " }));
         RapportFiltreAfficherToutCombox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RapportFiltreAfficherToutComboxActionPerformed(evt);
@@ -905,7 +888,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         // 4. Get the date from the expense date pickers
         int jour = (Integer) JoursDepense.getValue();
         int mois = MoisDepense.getSelectedIndex() + 1;
-        int annee = Integer.parseInt(AnneeDepense.getSelectedItem().toString());
+        int annee = (Integer) AnneeDepense.getValue(); // Changed from parsing a string
         java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
 
         // 5. Add the new expense via the finance manager
@@ -939,10 +922,6 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
     private void RevenueMontantFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RevenueMontantFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_RevenueMontantFieldActionPerformed
-
-    private void AnneeRevenueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnneeRevenueActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_AnneeRevenueActionPerformed
 
     private void MoisDepenseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MoisDepenseActionPerformed
         // TODO add your handling code here:
@@ -993,7 +972,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         // 4. Get the date from the revenue date pickers.
         int jour = (Integer) JoursRevenue.getValue();
         int mois = MoisRevenue.getSelectedIndex() + 1; // Add 1 because index is 0-based
-        int annee = Integer.parseInt(AnneeRevenue.getSelectedItem().toString());
+        int annee = (Integer) AnneeRevenue.getValue(); // Changed from parsing a string
         java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
 
         // 5. Add the new revenue via the finance manager.
@@ -1027,7 +1006,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         String description = RevenueSourceField.getText();
         double montant = Double.parseDouble(RevenueMontantField.getText());
         java.time.LocalDate date = java.time.LocalDate.of(
-            Integer.parseInt(AnneeRevenue.getSelectedItem().toString()),
+            (Integer) AnneeRevenue.getValue(), // Changed from parsing a string
             MoisRevenue.getSelectedIndex() + 1,
             (Integer) JoursRevenue.getValue()
         );
@@ -1057,7 +1036,7 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
         String description = DepenseDescriptionField.getText();
         double montant = Double.parseDouble(DepenseMontantField.getText());
         java.time.LocalDate date = java.time.LocalDate.of(
-            Integer.parseInt(AnneeDepense.getSelectedItem().toString()),
+             (Integer) AnneeDepense.getValue(), // Changed from parsing a string
             MoisDepense.getSelectedIndex() + 1,
             (Integer) JoursDepense.getValue()
         );
@@ -1156,8 +1135,8 @@ TableRapport.getSelectionModel().addListSelectionListener(new javax.swing.event.
     private javax.swing.JButton AjoutRevenueButton;
     private javax.swing.JPanel AjouterDepense;
     private javax.swing.JPanel AjouterRevenue;
-    private javax.swing.JComboBox<String> AnneeDepense;
-    private javax.swing.JComboBox<String> AnneeRevenue;
+    private javax.swing.JSpinner AnneeDepense;
+    private javax.swing.JSpinner AnneeRevenue;
     private javax.swing.JLabel AppLabel;
     private javax.swing.JLabel BalanceLabel;
     private javax.swing.JLabel BalanceMontantLabel;
