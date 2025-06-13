@@ -5,12 +5,13 @@ import java.io.Serializable;
 /**
  * Classe de base pour la gestion des opérations financières.
  * Implémente Serializable pour permettre la sauvegarde des données.
+ * Cette classe sert de base pour les classes Revenue et Depense.
  */
 public class GestionDepense implements Serializable {
     /** Identifiant unique de l'opération */
     private int id;
     /** Compteur pour générer des IDs uniques */
-    private static int counter = 0;
+    private static int compteur = 0;
     /** Description de l'opération */
     private String description;
     /** Date de l'opération */
@@ -27,22 +28,22 @@ public class GestionDepense implements Serializable {
      */
     public GestionDepense(String description, LocalDate dateOperation, double montant) {
         if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("Description must not be null or empty");
+            throw new IllegalArgumentException("La description ne doit pas être vide");
         }
         if (dateOperation == null) {
-            throw new IllegalArgumentException("Date of operation must not be null");
+            throw new IllegalArgumentException("La date de l'opération ne doit pas être nulle");
         }
         if (montant < 0) {
-            throw new IllegalArgumentException("Amount must be non-negative");
+            throw new IllegalArgumentException("Le montant doit être positif");
         }
-        this.id = ++counter;
+        this.id = ++compteur;
         this.description = description;
         this.dateOperation = dateOperation;
         this.montant = montant;
     }
 
     /**
-     * Récupère l'identifiant de l'opération
+     * Récupère l'identifiant unique de l'opération
      * @return L'identifiant unique
      */
     public int getId() {
@@ -80,7 +81,7 @@ public class GestionDepense implements Serializable {
      */
     public void setDescription(String description) {
         if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("Description must not be null or empty");
+            throw new IllegalArgumentException("La description ne doit pas être vide");
         }
         this.description = description;
     }
@@ -92,7 +93,7 @@ public class GestionDepense implements Serializable {
      */
     public void setDateOperation(LocalDate dateOperation) {
         if (dateOperation == null) {
-            throw new IllegalArgumentException("Date of operation must not be null");
+            throw new IllegalArgumentException("La date de l'opération ne doit pas être nulle");
         }
         this.dateOperation = dateOperation;
     }
@@ -104,16 +105,16 @@ public class GestionDepense implements Serializable {
      */
     public void setMontant(double montant) {
         if (montant < 0) {
-            throw new IllegalArgumentException("Amount must be non-negative");
+            throw new IllegalArgumentException("Le montant doit être positif");
         }
         this.montant = montant;
     }
     
     /**
      * Modifie le compteur d'IDs
-     * @param newCounter Nouvelle valeur du compteur
+     * @param nouveauCompteur Nouvelle valeur du compteur
      */
-    public static void setCounter(int newCounter) {
-        counter = newCounter;
+    public static void setCounter(int nouveauCompteur) {
+        compteur = nouveauCompteur;
     }
 }

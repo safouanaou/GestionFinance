@@ -6,13 +6,14 @@ import java.util.stream.Collectors;
 /**
  * Classe pour générer des rapports financiers.
  * Permet d'analyser les revenus et dépenses sur une période donnée.
+ * Fournit des méthodes pour filtrer et calculer les totaux des opérations financières.
  */
 public class Rapport {
 
-    /** Liste de tous les revenus */
-    private List<Revenue> allRevenues;
-    /** Liste de toutes les dépenses */
-    private List<Depense> allExpenses;
+    /** Liste de tous les revenus à analyser */
+    private List<Revenue> tousRevenus;
+    /** Liste de toutes les dépenses à analyser */
+    private List<Depense> toutesDepenses;
 
     /**
      * Constructeur pour créer un nouveau rapport
@@ -20,66 +21,70 @@ public class Rapport {
      * @param depenses Liste des dépenses à analyser
      */
     public Rapport(List<Revenue> revenus, List<Depense> depenses) {
-        this.allRevenues = revenus;
-        this.allExpenses = depenses;
+        this.tousRevenus = revenus;
+        this.toutesDepenses = depenses;
     }
 
     /**
      * Filtre et retourne la liste des revenus pour un mois et une année spécifiques
-     * @param month Le mois (1-12)
-     * @param year L'année
+     * @param mois Le mois (1-12)
+     * @param annee L'année
      * @return Liste des revenus correspondants
      */
-    public List<Revenue> getMonthlyRevenues(int month, int year) {
-        return allRevenues.stream()
-                .filter(r -> r.getDateOperation().getMonthValue() == month && r.getDateOperation().getYear() == year)
+    public List<Revenue> getMonthlyRevenues(int mois, int annee) {
+        return tousRevenus.stream()
+                .filter(r -> r.getDateOperation().getMonthValue() == mois && r.getDateOperation().getYear() == annee)
                 .collect(Collectors.toList());
     }
 
     /**
      * Filtre et retourne la liste des dépenses pour un mois et une année spécifiques
-     * @param month Le mois (1-12)
-     * @param year L'année
+     * @param mois Le mois (1-12)
+     * @param annee L'année
      * @return Liste des dépenses correspondantes
      */
-    public List<Depense> getMonthlyExpenses(int month, int year) {
-        return allExpenses.stream()
-                .filter(d -> d.getDateOperation().getMonthValue() == month && d.getDateOperation().getYear() == year)
+    public List<Depense> getMonthlyExpenses(int mois, int annee) {
+        return toutesDepenses.stream()
+                .filter(d -> d.getDateOperation().getMonthValue() == mois && d.getDateOperation().getYear() == annee)
                 .collect(Collectors.toList());
     }
 
     /**
      * Calcule la somme totale des montants pour une liste de revenus donnée
-     * @param revenues Liste des revenus
-     * @return Somme totale
+     * @param revenus Liste des revenus
+     * @return Somme totale des revenus
      */
-    public double calculateTotalRevenue(List<Revenue> revenues) {
-        return revenues.stream().mapToDouble(GestionDepense::getMontant).sum();
+    public double calculateTotalRevenue(List<Revenue> revenus) {
+        return revenus.stream()
+                .mapToDouble(Revenue::getMontant)
+                .sum();
     }
 
     /**
      * Calcule la somme totale des montants pour une liste de dépenses donnée
-     * @param expenses Liste des dépenses
-     * @return Somme totale
+     * @param depenses Liste des dépenses
+     * @return Somme totale des dépenses
      */
-    public double calculateTotalExpense(List<Depense> expenses) {
-        return expenses.stream().mapToDouble(GestionDepense::getMontant).sum();
+    public double calculateTotalExpense(List<Depense> depenses) {
+        return depenses.stream()
+                .mapToDouble(Depense::getMontant)
+                .sum();
     }
 
     /**
      * Génère un rapport mensuel détaillé
-     * @param month Le mois (1-12)
-     * @param year L'année
+     * @param mois Le mois (1-12)
+     * @param annee L'année
      * @return Rapport mensuel formaté
      */
-    public String generateMonthlyReport(int month, int year) {
-        String report = "--- Rapport Financier Mensuel - " + month + "/" + year + " ---\n\n";
+    public String generateMonthlyReport(int mois, int annee) {
+        String rapport = "--- Rapport Financier Mensuel - " + mois + "/" + annee + " ---\n\n";
 
-        List<Revenue> monthlyRevenues = getMonthlyRevenues(month, year);
-        List<Depense> monthlyExpenses = getMonthlyExpenses(month, year);
+        List<Revenue> revenusMensuels = getMonthlyRevenues(mois, annee);
+        List<Depense> depensesMensuelles = getMonthlyExpenses(mois, annee);
         
         // ... rest of the original method logic ...
 
-        return report;
+        return rapport;
     }
 }

@@ -4,28 +4,29 @@ import java.io.Serializable;
 /**
  * Classe représentant une catégorie de dépense.
  * Implémente Serializable pour permettre la sauvegarde des données.
+ * Utilisée pour classer et organiser les dépenses.
  */
 public class CategorieDepense implements Serializable {
 
-    /** Nom de la catégorie */
-    private String name;
-    /** Description de la catégorie */
+    /** Nom de la catégorie (ex: alimentation, transport, etc.) */
+    private String nom;
+    /** Description détaillée de la catégorie */
     private String description;
 
     /**
      * Constructeur pour créer une nouvelle catégorie de dépense
-     * @param name Nom de la catégorie
+     * @param nom Nom de la catégorie
      * @param description Description de la catégorie
      * @throws IllegalArgumentException si le nom ou la description est vide
      */
-    public CategorieDepense(String name, String description) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name must not be null or empty");
+    public CategorieDepense(String nom, String description) {
+        if (nom == null || nom.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom ne doit pas être vide");
         }
         if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("Description must not be null or empty");
+            throw new IllegalArgumentException("La description ne doit pas être vide");
         }
-        this.name = name;
+        this.nom = nom;
         this.description = description;
     }
 
@@ -33,8 +34,8 @@ public class CategorieDepense implements Serializable {
      * Récupère le nom de la catégorie
      * @return Le nom de la catégorie
      */
-    public String getName() {
-        return name;
+    public String getNom() {
+        return nom;
     }
 
     /**

@@ -5,45 +5,46 @@ import java.util.List;
 /**
  * Classe représentant un revenu dans le système de gestion financière.
  * Hérite de GestionDepense pour les fonctionnalités de base.
+ * Ajoute la gestion des sources de revenus.
  */
 public class Revenue extends GestionDepense {
 
     /** Liste des sources de revenu (ex: salaire, investissement, etc.) */
-    private List<SourceRevenue> source;
+    private List<SourceRevenue> sources;
 
     /**
      * Constructeur pour créer un nouveau revenu
      * @param description Description du revenu
      * @param dateOperation Date du revenu
      * @param montant Montant du revenu
-     * @param source Liste des sources du revenu
+     * @param sources Liste des sources du revenu
      * @throws IllegalArgumentException si la liste des sources est null ou vide
      */
-    public Revenue(String description, LocalDate dateOperation, double montant, List<SourceRevenue> source) {
+    public Revenue(String description, LocalDate dateOperation, double montant, List<SourceRevenue> sources) {
         super(description, dateOperation, montant);
-        if (source == null || source.isEmpty()) {
-            throw new IllegalArgumentException("Source list must not be null or empty");
+        if (sources == null || sources.isEmpty()) {
+            throw new IllegalArgumentException("La liste des sources ne doit pas être vide");
         }
-        this.source = source;
+        this.sources = sources;
     }
 
     /**
      * Récupère la liste des sources de revenu
      * @return La liste des sources de revenu
      */
-    public List<SourceRevenue> getSource() {
-        return source;
+    public List<SourceRevenue> getSources() {
+        return sources;
     }
 
     /**
      * Modifie la liste des sources de revenu
-     * @param source Nouvelle liste des sources
+     * @param sources Nouvelle liste des sources
      * @throws IllegalArgumentException si la liste des sources est null ou vide
      */
-    public void setSource(List<SourceRevenue> source) {
-        if (source == null || source.isEmpty()) {
-            throw new IllegalArgumentException("Source list must not be null or empty");
+    public void setSources(List<SourceRevenue> sources) {
+        if (sources == null || sources.isEmpty()) {
+            throw new IllegalArgumentException("La liste des sources ne doit pas être vide");
         }
-        this.source = source;
+        this.sources = sources;
     }
 }

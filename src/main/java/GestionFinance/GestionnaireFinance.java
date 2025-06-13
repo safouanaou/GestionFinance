@@ -3,12 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.io.*;
 import java.util.stream.Stream;
 
@@ -19,17 +14,17 @@ import java.util.stream.Stream;
 public class GestionnaireFinance {
 
     /** Liste des revenus enregistrés */
-    private List<Revenue> revenues;
+    private List<Revenue> revenus;
     /** Liste des dépenses enregistrées */
     private List<Depense> depenses;
     /** Fichier de stockage des données */
-    private static final String DATA_FILE = "finance.in";
+    private static final String FICHIER_DONNEES = "finance.in";
 
     /**
      * Constructeur initialisant les listes de revenus et dépenses
      */
     public GestionnaireFinance() {
-        this.revenues = new ArrayList<>();
+        this.revenus = new ArrayList<>();
         this.depenses = new ArrayList<>();
     }
 
@@ -40,9 +35,9 @@ public class GestionnaireFinance {
      * @param montant Montant du revenu
      * @param source Sources du revenu
      */
-    public void addRevenu(String description, LocalDate dateOperation, double montant, List<SourceRevenue> source) {
-        Revenue newRevenu = new Revenue(description, dateOperation, montant, source);
-        this.revenues.add(newRevenu);
+    public void ajouterRevenu(String description, LocalDate dateOperation, double montant, List<SourceRevenue> source) {
+        Revenue nouveauRevenu = new Revenue(description, dateOperation, montant, source);
+        this.revenus.add(nouveauRevenu);
     }
 
     /**
@@ -52,48 +47,48 @@ public class GestionnaireFinance {
      * @param montant Montant de la dépense
      * @param categorie Catégorie de la dépense
      */
-    public void addDepense(String description, LocalDate dateOperation, double montant, CategorieDepense categorie) {
-        Depense newDepense = new Depense(description, dateOperation, montant, categorie);
-        this.depenses.add(newDepense);
+    public void ajouterDepense(String description, LocalDate dateOperation, double montant, CategorieDepense categorie) {
+        Depense nouvelleDepense = new Depense(description, dateOperation, montant, categorie);
+        this.depenses.add(nouvelleDepense);
     }
 
     /**
      * Récupère tous les revenus
      * @return Copie de la liste des revenus
      */
-    public List<Revenue> getAllRevenues() {
-        return new ArrayList<>(this.revenues);
+    public List<Revenue> obtenirTousRevenus() {
+        return new ArrayList<>(this.revenus);
     }
 
     /**
      * Récupère toutes les dépenses
      * @return Copie de la liste des dépenses
      */
-    public List<Depense> getAllDepenses() {
+    public List<Depense> obtenirToutesDepenses() {
         return new ArrayList<>(this.depenses);
     }
 
     /**
      * Récupère les revenus d'un mois spécifique
-     * @param month Mois cible
-     * @param year Année cible
+     * @param mois Mois cible
+     * @param annee Année cible
      * @return Liste des revenus du mois spécifié
      */
-    public List<Revenue> getRevenuesByMonth(int month, int year) {
-        return revenues.stream()
-                .filter(r -> r.getDateOperation().getMonthValue() == month && r.getDateOperation().getYear() == year)
+    public List<Revenue> obtenirRevenusParMois(int mois, int annee) {
+        return revenus.stream()
+                .filter(r -> r.getDateOperation().getMonthValue() == mois && r.getDateOperation().getYear() == annee)
                 .collect(Collectors.toList());
     }
 
     /**
      * Récupère les dépenses d'un mois spécifique
-     * @param month Mois cible
-     * @param year Année cible
+     * @param mois Mois cible
+     * @param annee Année cible
      * @return Liste des dépenses du mois spécifié
      */
-    public List<Depense> getDepensesByMonth(int month, int year) {
+    public List<Depense> obtenirDepensesParMois(int mois, int annee) {
         return depenses.stream()
-                .filter(d -> d.getDateOperation().getMonthValue() == month && d.getDateOperation().getYear() == year)
+                .filter(d -> d.getDateOperation().getMonthValue() == mois && d.getDateOperation().getYear() == annee)
                 .collect(Collectors.toList());
     }
 
@@ -102,8 +97,8 @@ public class GestionnaireFinance {
      * @param id ID du revenu à supprimer
      * @return true si la suppression a réussi, false sinon
      */
-    public boolean removeRevenuById(int id) {
-        return this.revenues.removeIf(r -> r.getId() == id);
+    public boolean supprimerRevenuParId(int id) {
+        return this.revenus.removeIf(r -> r.getId() == id);
     }
 
     /**
@@ -111,26 +106,26 @@ public class GestionnaireFinance {
      * @param id ID de la dépense à supprimer
      * @return true si la suppression a réussi, false sinon
      */
-    public boolean removeDepenseById(int id) {
+    public boolean supprimerDepenseParId(int id) {
         return this.depenses.removeIf(d -> d.getId() == id);
     }
 
     /**
      * Modifie une dépense existante
      * @param id ID de la dépense à modifier
-     * @param newDescription Nouvelle description
-     * @param newDate Nouvelle date
-     * @param newMontant Nouveau montant
-     * @param newCategorie Nouvelle catégorie
+     * @param nouvelleDescription Nouvelle description
+     * @param nouvelleDate Nouvelle date
+     * @param nouveauMontant Nouveau montant
+     * @param nouvelleCategorie Nouvelle catégorie
      * @return true si la modification a réussi, false sinon
      */
-    public boolean modifierDepense(int id, String newDescription, java.time.LocalDate newDate, double newMontant, CategorieDepense newCategorie) {
+    public boolean modifierDepense(int id, String nouvelleDescription, java.time.LocalDate nouvelleDate, double nouveauMontant, CategorieDepense nouvelleCategorie) {
         for (Depense d : depenses) {
             if (d.getId() == id) {
-                d.setDescription(newDescription);
-                d.setDateOperation(newDate);
-                d.setMontant(newMontant);
-                d.setCategorie(newCategorie);
+                d.setDescription(nouvelleDescription);
+                d.setDateOperation(nouvelleDate);
+                d.setMontant(nouveauMontant);
+                d.setCategorie(nouvelleCategorie);
                 return true;
             }
         }
@@ -140,19 +135,19 @@ public class GestionnaireFinance {
     /**
      * Modifie un revenu existant
      * @param id ID du revenu à modifier
-     * @param newDescription Nouvelle description
-     * @param newDate Nouvelle date
-     * @param newMontant Nouveau montant
-     * @param newSource Nouvelles sources
+     * @param nouvelleDescription Nouvelle description
+     * @param nouvelleDate Nouvelle date
+     * @param nouveauMontant Nouveau montant
+     * @param nouvellesSources Nouvelles sources
      * @return true si la modification a réussi, false sinon
      */
-    public boolean modifierRevenue(int id, String newDescription, java.time.LocalDate newDate, double newMontant, java.util.List<SourceRevenue> newSource) {
-        for (Revenue r : revenues) {
+    public boolean modifierRevenue(int id, String nouvelleDescription, java.time.LocalDate nouvelleDate, double nouveauMontant, java.util.List<SourceRevenue> nouvellesSources) {
+        for (Revenue r : revenus) {
             if (r.getId() == id) {
-                r.setDescription(newDescription);
-                r.setDateOperation(newDate);
-                r.setMontant(newMontant);
-                r.setSource(newSource);
+                r.setDescription(nouvelleDescription);
+                r.setDateOperation(nouvelleDate);
+                r.setMontant(nouveauMontant);
+                r.setSources(nouvellesSources);
                 return true;
             }
         }
@@ -162,52 +157,52 @@ public class GestionnaireFinance {
     /**
      * Sauvegarde les données dans le fichier
      */
-    public void saveData() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            out.writeInt(revenues.size());
-            for (Revenue revenue : revenues) {
-                out.writeObject(revenue);
+    public void sauvegarderDonnees() {
+        try (ObjectOutputStream sortie = new ObjectOutputStream(new FileOutputStream(FICHIER_DONNEES))) {
+            sortie.writeInt(revenus.size());
+            for (Revenue revenu : revenus) {
+                sortie.writeObject(revenu);
             }
 
-            out.writeInt(depenses.size());
+            sortie.writeInt(depenses.size());
             for (Depense depense : depenses) {
-                out.writeObject(depense);
+                sortie.writeObject(depense);
             }
-            System.out.println("Data saved successfully to " + DATA_FILE);
+            System.out.println("Données sauvegardées avec succès dans " + FICHIER_DONNEES);
         } catch (IOException e) {
-            System.err.println("Error saving data: " + e.getMessage());
+            System.err.println("Erreur lors de la sauvegarde des données : " + e.getMessage());
         }
     }
 
     /**
      * Charge les données depuis le fichier
      */
-    public void loadData() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            int revenueCount = in.readInt();
-            this.revenues.clear();
-            for (int i = 0; i < revenueCount; i++) {
-                revenues.add((Revenue) in.readObject());
+    public void chargerDonnees() {
+        try (ObjectInputStream entree = new ObjectInputStream(new FileInputStream(FICHIER_DONNEES))) {
+            int nombreRevenus = entree.readInt();
+            this.revenus.clear();
+            for (int i = 0; i < nombreRevenus; i++) {
+                revenus.add((Revenue) entree.readObject());
             }
 
-            int depenseCount = in.readInt();
+            int nombreDepenses = entree.readInt();
             this.depenses.clear();
-            for (int i = 0; i < depenseCount; i++) {
-                depenses.add((Depense) in.readObject());
+            for (int i = 0; i < nombreDepenses; i++) {
+                depenses.add((Depense) entree.readObject());
             }
-            System.out.println("Data loaded successfully from " + DATA_FILE);
+            System.out.println("Données chargées avec succès depuis " + FICHIER_DONNEES);
             
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Could not load data, starting fresh: " + e.getMessage());
-            this.revenues = new ArrayList<>();
+            System.err.println("Impossible de charger les données, démarrage à vide : " + e.getMessage());
+            this.revenus = new ArrayList<>();
             this.depenses = new ArrayList<>();
         }
 
-        int maxId = Stream.concat(revenues.stream(), depenses.stream())
+        int idMax = Stream.concat(revenus.stream(), depenses.stream())
                           .mapToInt(GestionDepense::getId)
                           .max()
                           .orElse(0);
-        GestionDepense.setCounter(maxId);
+        GestionDepense.setCounter(idMax);
     }
 }
 

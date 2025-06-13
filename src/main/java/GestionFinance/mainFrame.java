@@ -1,13 +1,16 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Cliquez sur nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt pour modifier cette licence
+ * Cliquez sur nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java pour modifier ce modèle
  */
 package GestionFinance;
 import java.awt.CardLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 /**
- 
+ * Fenêtre principale de l'application de gestion financière.
+ * Cette classe gère l'interface utilisateur et les interactions avec le gestionnaire de finances.
+ * Elle permet d'ajouter, modifier et supprimer des revenus et dépenses,
+ * ainsi que de générer des rapports et des graphiques.
  * @author Safouan
  */
 
@@ -16,11 +19,18 @@ import java.awt.event.WindowEvent;
 
 public class mainFrame extends javax.swing.JFrame {
     
+    /** Gestionnaire de finances pour gérer les opérations financières */
     private GestionnaireFinance gestionnaireFinance;
     
+    /** ID de la transaction sélectionnée dans le tableau */
     private int selectedTransactionId = -1;
+    /** Type de la transaction sélectionnée (Revenu ou Dépense) */
     private String selectedTransactionType = "";
     
+    /**
+     * Initialise les sélecteurs de date pour les revenus et dépenses.
+     * Configure les spinners et combobox pour les jours, mois et années.
+     */
     private void initializeDatePickers() {
     java.time.LocalDate today = java.time.LocalDate.now();
     int currentYear = today.getYear(); // <- Declaration of 'currentYear'
@@ -44,125 +54,125 @@ public class mainFrame extends javax.swing.JFrame {
 
 
     // --- Setup for the filter controls ---
-    // Now this code can find and use 'currentYear' and 'months' without error.
+    // Maintenant ce code peut trouver et utiliser 'currentYear' et 'months' sans erreur.
     RapportFiltreAnneeSpinner.setModel(new javax.swing.SpinnerNumberModel(currentYear, 1990, 2030, 1));
     RapportFiltreMoisCombox.setModel(new javax.swing.DefaultComboBoxModel<>(months));
     RapportFiltreMoisCombox.setSelectedIndex(today.getMonthValue() - 1);
 
-    RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tout", "Revenues", "Depenses" }));
+    RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tout", "Revenus", "Dépenses" }));
 }
     
+    /**
+     * Génère un rapport financier basé sur les filtres sélectionnés.
+     * Affiche les revenus et dépenses dans un tableau et calcule les totaux.
+     */
     private void generateReport() {
     try {
-        int year = (Integer) RapportFiltreAnneeSpinner.getValue();
-        int month = RapportFiltreMoisCombox.getSelectedIndex() + 1;
-        String showChoice = (String) RapportFiltreAfficherToutCombox.getSelectedItem();
+        int annee = (Integer) RapportFiltreAnneeSpinner.getValue();
+        int mois = RapportFiltreMoisCombox.getSelectedIndex() + 1;
+        String choixAffichage = (String) RapportFiltreAfficherToutCombox.getSelectedItem();
 
-        java.util.List<Revenue> monthlyRevenues = gestionnaireFinance.getRevenuesByMonth(month, year);
-        java.util.List<Depense> monthlyExpenses = gestionnaireFinance.getDepensesByMonth(month, year);
+        java.util.List<Revenue> revenusMensuels = gestionnaireFinance.obtenirRevenusParMois(mois, annee);
+        java.util.List<Depense> depensesMensuelles = gestionnaireFinance.obtenirDepensesParMois(mois, annee);
 
-        double totalRevenue = monthlyRevenues.stream().mapToDouble(GestionDepense::getMontant).sum();
-        double totalExpense = monthlyExpenses.stream().mapToDouble(GestionDepense::getMontant).sum();
-        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance();
-        TotalRevenueMontantLabel.setText(currencyFormat.format(totalRevenue));
-        TotalDepenseMontantLabel.setText(currencyFormat.format(totalExpense));
-        BalanceMontantLabel.setText(currencyFormat.format(totalRevenue - totalExpense));
+        double totalRevenus = revenusMensuels.stream().mapToDouble(GestionDepense::getMontant).sum();
+        double totalDepenses = depensesMensuelles.stream().mapToDouble(GestionDepense::getMontant).sum();
+        java.text.NumberFormat formatMonetaire = java.text.NumberFormat.getCurrencyInstance();
+        TotalRevenueMontantLabel.setText(formatMonetaire.format(totalRevenus));
+        TotalDepenseMontantLabel.setText(formatMonetaire.format(totalDepenses));
+        BalanceMontantLabel.setText(formatMonetaire.format(totalRevenus - totalDepenses));
 
-        // --- MODIFICATION IS HERE ---
-        String[] columnNames = {"ID", "Type", "Description", "Date", "Montant", "Catégorie/Source"};
-        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel(columnNames, 0) {
-            // Make table cells non-editable by default
+        String[] nomsColonnes = {"ID", "Type", "Description", "Date", "Montant", "Catégorie/Source"};
+        javax.swing.table.DefaultTableModel modele = new javax.swing.table.DefaultTableModel(nomsColonnes, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        if ("Tout".equals(showChoice) || "Revenues".equals(showChoice)) {
-            for (Revenue r : monthlyRevenues) {
-                String sourceNames = r.getSource().stream().map(SourceRevenue::getName).collect(java.util.stream.Collectors.joining(", "));
-                model.addRow(new Object[]{r.getId(), "Revenu", r.getDescription(), r.getDateOperation(), r.getMontant(), sourceNames});
+        if ("Tout".equals(choixAffichage) || "Revenus".equals(choixAffichage)) {
+            for (Revenue r : revenusMensuels) {
+                String nomsSources = r.getSources().stream().map(SourceRevenue::getNom).collect(java.util.stream.Collectors.joining(", "));
+                modele.addRow(new Object[]{r.getId(), "Revenu", r.getDescription(), r.getDateOperation(), r.getMontant(), nomsSources});
             }
         }
 
-        if ("Tout".equals(showChoice) || "Dépenses".equals(showChoice)) {
-            for (Depense d : monthlyExpenses) {
-                model.addRow(new Object[]{d.getId(), "Dépense", d.getDescription(), d.getDateOperation(), d.getMontant(), d.getCategorie().getName()});
+        if ("Tout".equals(choixAffichage) || "Dépenses".equals(choixAffichage)) {
+            for (Depense d : depensesMensuelles) {
+                modele.addRow(new Object[]{d.getId(), "Dépense", d.getDescription(), d.getDateOperation(), d.getMontant(), d.getCategorie().getNom()});
             }
         }
 
-        TableRapport.setModel(model);
+        TableRapport.setModel(modele);
 
-        // Hide the ID column
         TableRapport.getColumnModel().getColumn(0).setMinWidth(0);
         TableRapport.getColumnModel().getColumn(0).setMaxWidth(0);
         TableRapport.getColumnModel().getColumn(0).setWidth(0);
-        // --- END OF MODIFICATION ---
 
     } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error generating report: " + e.getMessage(), "Report Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        javax.swing.JOptionPane.showMessageDialog(this, "Erreur lors de la génération du rapport: " + e.getMessage(), "Erreur de Rapport", javax.swing.JOptionPane.ERROR_MESSAGE);
         e.printStackTrace();
     }
 }
     
-     private void displayYearlyChart() {
+    /**
+     * Affiche un graphique annuel des revenus et dépenses.
+     * Crée un graphique à barres montrant l'évolution mensuelle.
+     */
+    private void displayYearlyChart() {
         try {
-            // 1. Get the selected year from the spinner
-            int year = (Integer) ChartFiltreAnneeSpinner.getValue();
+            int annee = (Integer) ChartFiltreAnneeSpinner.getValue();
 
-            // 2. Create a dataset for the bar chart
             org.jfree.data.category.DefaultCategoryDataset dataset = new org.jfree.data.category.DefaultCategoryDataset();
-            Rapport rapport = new Rapport(gestionnaireFinance.getAllRevenues(), gestionnaireFinance.getAllDepenses());
+            Rapport rapport = new Rapport(gestionnaireFinance.obtenirTousRevenus(), gestionnaireFinance.obtenirToutesDepenses());
 
-            String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            String[] mois = {"Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"};
 
-            // 3. Loop through all 12 months to get the data
-            for (int month = 1; month <= 12; month++) {
-                java.util.List<Revenue> monthlyRevenues = rapport.getMonthlyRevenues(month, year);
-                java.util.List<Depense> monthlyExpenses = rapport.getMonthlyExpenses(month, year);
+            for (int moisIndex = 1; moisIndex <= 12; moisIndex++) {
+                java.util.List<Revenue> revenusMensuels = rapport.getMonthlyRevenues(moisIndex, annee);
+                java.util.List<Depense> depensesMensuelles = rapport.getMonthlyExpenses(moisIndex, annee);
 
-                double totalRevenue = rapport.calculateTotalRevenue(monthlyRevenues);
-                double totalExpense = rapport.calculateTotalExpense(monthlyExpenses);
+                double totalRevenus = rapport.calculateTotalRevenue(revenusMensuels);
+                double totalDepenses = rapport.calculateTotalExpense(depensesMensuelles);
 
-                // Add the data to the dataset
-                dataset.addValue(totalRevenue, "Revenu", months[month - 1]);
-                dataset.addValue(totalExpense, "Dépense", months[month - 1]);
+                dataset.addValue(totalRevenus, "Revenu", mois[moisIndex - 1]);
+                dataset.addValue(totalDepenses, "Dépense", mois[moisIndex - 1]);
             }
 
-            // 4. Create the bar chart object
-            org.jfree.chart.JFreeChart barChart = org.jfree.chart.ChartFactory.createBarChart(
-                "Yearly Financial Summary for " + year, // Chart title
-                "Month",                               // X-axis label
-                "Amount ($)",                          // Y-axis label
-                dataset,                               // Dataset
+            org.jfree.chart.JFreeChart graphiqueBarres = org.jfree.chart.ChartFactory.createBarChart(
+                "Résumé Financier Annuel pour " + annee,
+                "Mois",
+                "Montant (€)",
+                dataset,
                 org.jfree.chart.plot.PlotOrientation.VERTICAL,
-                true, true, false);                    //  legend, tooltips, URLs
+                true, true, false);
 
-            // 5. Customize the chart's appearance
-            org.jfree.chart.plot.CategoryPlot plot = barChart.getCategoryPlot();
-            plot.getRenderer().setSeriesPaint(0, new java.awt.Color(50, 177, 74));  // Color for "Revenu"
-            plot.getRenderer().setSeriesPaint(1, new java.awt.Color(231, 21, 21));   // Color for "Dépense"
-            plot.setBackgroundPaint(java.awt.Color.white);
+            org.jfree.chart.plot.CategoryPlot graphique = graphiqueBarres.getCategoryPlot();
+            graphique.getRenderer().setSeriesPaint(0, new java.awt.Color(50, 177, 74));
+            graphique.getRenderer().setSeriesPaint(1, new java.awt.Color(231, 21, 21));
+            graphique.setBackgroundPaint(java.awt.Color.white);
 
-            // 6. Create a ChartPanel to display the chart in Swing
-            org.jfree.chart.ChartPanel chartPanel = new org.jfree.chart.ChartPanel(barChart);
-            chartPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
-            chartPanel.setBackground(java.awt.Color.white);
+            org.jfree.chart.ChartPanel panneauGraphique = new org.jfree.chart.ChartPanel(graphiqueBarres);
+            panneauGraphique.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15));
+            panneauGraphique.setBackground(java.awt.Color.white);
 
-            // 7. Add the chart panel to your designated display area
-            actualChartAreaPanel.removeAll(); // Clear the previous content
+            actualChartAreaPanel.removeAll();
             actualChartAreaPanel.setLayout(new java.awt.BorderLayout());
-            actualChartAreaPanel.add(chartPanel, java.awt.BorderLayout.CENTER);
-            actualChartAreaPanel.validate(); // Refresh the panel display
+            actualChartAreaPanel.add(panneauGraphique, java.awt.BorderLayout.CENTER);
+            actualChartAreaPanel.validate();
 
         } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error creating chart: " + e.getMessage(), "Chart Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "Erreur lors de la création du graphique: " + e.getMessage(), "Erreur de Graphique", javax.swing.JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
      
-     private void setupComboBoxes() {
-    // Define the predefined lists of categories and sources
+    /**
+     * Configure les listes déroulantes pour les catégories de dépenses et sources de revenus.
+     * Initialise les valeurs prédéfinies pour ces listes.
+     */
+    private void setupComboBoxes() {
+    // Définir les listes prédéfinies des catégories et sources
     String[] expenseCategories = {
         "Nourriture", "Transport", "Logement", "Factures", "Loisirs", "Santé", "Autre"
     };
@@ -170,19 +180,23 @@ public class mainFrame extends javax.swing.JFrame {
         "Salaire", "Freelance", "Investissements", "Cadeaux", "Autre"
     };
 
-    // Populate the expense category combo box with the new model
+    // Remplir la liste déroulante des catégories de dépenses
     DepenseCategorieField.setModel(new javax.swing.DefaultComboBoxModel<>(expenseCategories));
 
-    // Populate the revenue source combo box with the new model
+    // Remplir la liste déroulante des sources de revenus
     RevenueSourceField.setModel(new javax.swing.DefaultComboBoxModel<>(revenueSources));
 }
 
+    /**
+     * Point d'entrée principal de l'application.
+     * Configure l'apparence de l'interface et lance la fenêtre principale.
+     */
     public static void main(String args[]) throws Exception { 
         
         javax.swing.UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
         
 
-    /* Create and display the form */
+    /* Créer et afficher le formulaire */
     java.awt.EventQueue.invokeLater(new Runnable() {
         @Override
         public void run() {
@@ -192,11 +206,11 @@ public class mainFrame extends javax.swing.JFrame {
 }
 
     /**
-     * Creates new form mainFrame
+     * Constructeur de la fenêtre principale.
+     * Initialise les composants, charge les données et configure les écouteurs d'événements.
      */
-
-public mainFrame() {
-        // This NetBeans method must be called first
+    public mainFrame() {
+        // Cette méthode NetBeans doit être appelée en premier
         initComponents();
 
         // Initialize the finance manager
@@ -208,17 +222,17 @@ public mainFrame() {
     this.gestionnaireFinance = new GestionnaireFinance();
 
         // Load existing data from the file on startup
-        gestionnaireFinance.loadData();
+        gestionnaireFinance.chargerDonnees();
         
         // Refresh the table with any data that was loaded
         generateReport();
 
-        // This listener saves data when the user clicks the 'X' button to close the window
+        // Cet écouteur sauvegarde les données lorsque l'utilisateur clique sur le bouton 'X' pour fermer la fenêtre
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println("Window is closing, attempting to save...");
-                gestionnaireFinance.saveData();
+                gestionnaireFinance.sauvegarderDonnees();
                 super.windowClosing(e);
             }
         });
@@ -249,7 +263,7 @@ public mainFrame() {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Code généré">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -336,7 +350,7 @@ public mainFrame() {
         Header.setLayout(flowLayout3);
 
         AppLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        AppLabel.setText("Gestion Depenses et Revenues");
+        AppLabel.setText("Gestion des Dépenses et Revenus");
         Header.add(AppLabel);
 
         TableBordButton.setBackground(new java.awt.Color(50, 177, 74));
@@ -387,7 +401,7 @@ public mainFrame() {
         Sidebar.setPreferredSize(new java.awt.Dimension(400, 510));
         Sidebar.setLayout(new java.awt.GridLayout(2, 1));
 
-        AjouterRevenue.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ajouter revenue", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
+        AjouterRevenue.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ajouter un revenu", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
         AjouterRevenue.setLayout(new java.awt.GridBagLayout());
 
         RevenueDescriptionLabel.setText("Description");
@@ -440,7 +454,7 @@ public mainFrame() {
         JoursRevenue.setPreferredSize(new java.awt.Dimension(70, 26));
         DatePanel.add(JoursRevenue);
 
-        MoisRevenue.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Janvier", "Item 2", "Item 3", "Item 4" }));
+        MoisRevenue.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" }));
         MoisRevenue.setPreferredSize(new java.awt.Dimension(80, 26));
         MoisRevenue.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -577,7 +591,7 @@ public mainFrame() {
         JoursDepense.setPreferredSize(new java.awt.Dimension(67, 26));
         DepenseDatePanel.add(JoursDepense);
 
-        MoisDepense.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Janvier", "Item 2", "Item 3", "Item 4" }));
+        MoisDepense.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" }));
         MoisDepense.setPreferredSize(new java.awt.Dimension(80, 26));
         MoisDepense.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -698,7 +712,7 @@ public mainFrame() {
         RapportFiltreAfficherTout.setText("Show");
         ReportFilterPanel.add(RapportFiltreAfficherTout);
 
-        RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tout\t", "Revenues", "Depenses", " " }));
+        RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tout", "Revenus", "Dépenses" }));
         RapportFiltreAfficherToutCombox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RapportFiltreAfficherToutComboxActionPerformed(evt);
@@ -726,7 +740,7 @@ public mainFrame() {
         TotalRevenuePanel.setLayout(new java.awt.GridBagLayout());
 
         TotalRevenueLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        TotalRevenueLabel.setText("TOTAL REVENUES");
+        TotalRevenueLabel.setText("TOTAL DES REVENUS");
         TotalRevenuePanel.add(TotalRevenueLabel, new java.awt.GridBagConstraints());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -756,7 +770,7 @@ public mainFrame() {
         NetBalancePanel.setLayout(new java.awt.GridBagLayout());
 
         BalanceLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        BalanceLabel.setText("NET BALANCE");
+        BalanceLabel.setText("SOLDE NET");
         NetBalancePanel.add(BalanceLabel, new java.awt.GridBagConstraints());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -826,13 +840,13 @@ public mainFrame() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void RevenueDescriptionFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RevenueDescriptionFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_RevenueDescriptionFieldActionPerformed
+    private void RevenueDescriptionFieldActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO Ajouter votre code de gestion ici
+    }
 
-    private void RapportFiltreAfficherToutComboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RapportFiltreAfficherToutComboxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_RapportFiltreAfficherToutComboxActionPerformed
+    private void RapportFiltreAfficherToutComboxActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO Ajouter votre code de gestion ici
+    }
 
     private void TableBordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TableBordButtonActionPerformed
         // TODO add your handling code here:
@@ -875,7 +889,6 @@ public mainFrame() {
         }
 
         // 3. Get the selected category from the JComboBox
-        // MODIFIED LINE: Changed from getText() to getSelectedItem()
         String categorieName = (String) DepenseCategorieField.getSelectedItem();
         CategorieDepense categorie = new CategorieDepense(categorieName, "Catégorie de dépense");
 
@@ -886,7 +899,7 @@ public mainFrame() {
         java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
 
         // 5. Add the new expense via the finance manager
-        gestionnaireFinance.addDepense(description, dateOperation, montant, categorie);
+        gestionnaireFinance.ajouterDepense(description, dateOperation, montant, categorie);
 
         // 6. Provide user feedback and clear fields
         javax.swing.JOptionPane.showMessageDialog(this, "Dépense ajoutée avec succés!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -929,7 +942,6 @@ public mainFrame() {
 
      try {
         // 1. Get the description from the text field.
-        // BUG FIX: Was incorrectly reading from RevenueSourceField before.
         String description = RevenueDescriptionField.getText();
         if (description.trim().isEmpty()) {
             throw new IllegalArgumentException("La description ne peut pas être vide.");
@@ -949,12 +961,10 @@ public mainFrame() {
         }
 
         // 3. Get the selected source from the JComboBox.
-        // MODIFIED LINE: Changed from getText() to getSelectedItem()
         String sourceName = (String) RevenueSourceField.getSelectedItem();
-        // The check for an empty string is no longer needed as the combo box always has a selection.
 
         java.util.List<SourceRevenue> sources = new java.util.ArrayList<>();
-        sources.add(new SourceRevenue(sourceName, "Source de revenu")); // Description for SourceRevenue can be enhanced later if needed.
+        sources.add(new SourceRevenue(sourceName, "Source de revenu"));
 
         // 4. Get the date from the revenue date pickers.
         int jour = (Integer) JoursRevenue.getValue();
@@ -963,11 +973,11 @@ public mainFrame() {
         java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
 
         // 5. Add the new revenue via the finance manager.
-        gestionnaireFinance.addRevenu(description, dateOperation, montant, sources);
+        gestionnaireFinance.ajouterRevenu(description, dateOperation, montant, sources);
 
         // 7. Provide user feedback and clear fields.
         javax.swing.JOptionPane.showMessageDialog(this, "Revenu ajouté avec succès!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        RevenueDescriptionField.setText(""); // Corrected from RevenueSourceField
+        RevenueDescriptionField.setText("");
         RevenueMontantField.setText("");
 
     } catch (IllegalArgumentException e) {
@@ -981,7 +991,7 @@ public mainFrame() {
     private void ModifierRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierRevenueButtonActionPerformed
         // TODO add your handling code here:
        if (selectedTransactionId == -1 || !"Revenu".equals(selectedTransactionType)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please select a revenue from the table to modify.");
+        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner un revenu dans le tableau pour le modifier.");
         return;
     }
 
@@ -1003,18 +1013,18 @@ public mainFrame() {
 
         gestionnaireFinance.modifierRevenue(selectedTransactionId, description, date, montant, sources);
         generateReport(); // Refresh the table
-        javax.swing.JOptionPane.showMessageDialog(this, "Revenue updated successfully!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Revenu mis à jour avec succès!");
         selectedTransactionId = -1; // Reset selection
 
     } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_ModifierRevenueButtonActionPerformed
 
     private void ModifierDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierDepenseButtonActionPerformed
         // TODO add your handling code here:
          if (selectedTransactionId == -1 || !"Dépense".equals(selectedTransactionType)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please select an expense from the table to modify.");
+        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner une dépense dans le tableau pour la modifier.");
         return;
     }
 
@@ -1034,18 +1044,18 @@ public mainFrame() {
 
         gestionnaireFinance.modifierDepense(selectedTransactionId, description, date, montant, categorie);
         generateReport(); // Refresh the table
-        javax.swing.JOptionPane.showMessageDialog(this, "Expense updated successfully!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Dépense mise à jour avec succès!");
         selectedTransactionId = -1; // Reset selection
 
     } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_ModifierDepenseButtonActionPerformed
 
     private void SupprimerRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerRevenueButtonActionPerformed
         // TODO add your handling code here:
         if (selectedTransactionId == -1 || !"Revenu".equals(selectedTransactionType)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please select a revenue from the table to modify.");
+        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner un revenu dans le tableau pour le supprimer.");
         return;
     }
 
@@ -1067,11 +1077,11 @@ public mainFrame() {
 
         gestionnaireFinance.modifierRevenue(selectedTransactionId, description, date, montant, sources);
         generateReport(); // Refresh the table
-        javax.swing.JOptionPane.showMessageDialog(this, "Revenue updated successfully!");
+        javax.swing.JOptionPane.showMessageDialog(this, "Revenu mis à jour avec succès!");
         selectedTransactionId = -1; // Reset selection
 
     } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_SupprimerRevenueButtonActionPerformed
 
@@ -1079,29 +1089,28 @@ public mainFrame() {
         // TODO add your handling code here:
         
            if (selectedTransactionId == -1 || !"Dépense".equals(selectedTransactionType)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please select an expense from the table to delete.");
+        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner une dépense dans le tableau pour la supprimer.");
         return;
     }
 
     int confirmation = javax.swing.JOptionPane.showConfirmDialog(
         this,
-        "Are you sure you want to delete this expense?",
-        "Confirm Deletion",
+        "Êtes-vous sûr de vouloir supprimer cette dépense ?",
+        "Confirmer la suppression",
         javax.swing.JOptionPane.YES_NO_OPTION
     );
 
     if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
-        gestionnaireFinance.removeDepenseById(selectedTransactionId);
+        gestionnaireFinance.supprimerDepenseParId(selectedTransactionId);
         generateReport(); // Refresh table
 
         // Clear the form fields and reset selection
         DepenseDescriptionField.setText("");
         DepenseMontantField.setText("");
-        // --- MODIFIED LINE ---
         DepenseCategorieField.setSelectedIndex(0); // Reset combo box to the first item
         selectedTransactionId = -1;
 
-        javax.swing.JOptionPane.showMessageDialog(this, "Expense deleted successfully.");
+        javax.swing.JOptionPane.showMessageDialog(this, "Dépense supprimée avec succès.");
     }
     }//GEN-LAST:event_SupprimerDepenseButtonActionPerformed
 

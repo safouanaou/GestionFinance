@@ -5,6 +5,7 @@ import java.time.LocalDate;
 /**
  * Classe représentant une dépense dans le système de gestion financière.
  * Hérite de GestionDepense pour les fonctionnalités de base.
+ * Ajoute la gestion des catégories de dépenses.
  */
 public class Depense extends GestionDepense {
 
@@ -22,7 +23,7 @@ public class Depense extends GestionDepense {
     public Depense(String description, LocalDate dateOperation, double montant, CategorieDepense categorie) {
         super(description, dateOperation, montant);
         if (categorie == null) {
-            throw new IllegalArgumentException("CategorieDepense must not be null");
+            throw new IllegalArgumentException("La catégorie ne doit pas être nulle");
         }
         this.categorie = categorie;
     }
@@ -42,7 +43,7 @@ public class Depense extends GestionDepense {
      */
     public void setCategorie(CategorieDepense categorie) {
         if (categorie == null) {
-            throw new IllegalArgumentException("CategorieDepense must not be null");
+            throw new IllegalArgumentException("La catégorie ne doit pas être nulle");
         }
         this.categorie = categorie;
     }
