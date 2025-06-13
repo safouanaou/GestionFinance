@@ -160,6 +160,22 @@ public class mainFrame extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+     
+     private void setupComboBoxes() {
+    // Define the predefined lists of categories and sources
+    String[] expenseCategories = {
+        "Nourriture", "Transport", "Logement", "Factures", "Loisirs", "Santé", "Autre"
+    };
+    String[] revenueSources = {
+        "Salaire", "Freelance", "Investissements", "Cadeaux", "Autre"
+    };
+
+    // Populate the expense category combo box with the new model
+    DepenseCategorieField.setModel(new javax.swing.DefaultComboBoxModel<>(expenseCategories));
+
+    // Populate the revenue source combo box with the new model
+    RevenueSourceField.setModel(new javax.swing.DefaultComboBoxModel<>(revenueSources));
+}
 
     public static void main(String args[]) throws Exception { 
         
@@ -185,6 +201,11 @@ public mainFrame() {
 
         // Initialize the finance manager
         this.gestionnaireFinance = new GestionnaireFinance();
+        
+        setupComboBoxes();
+        
+        // Initialize the finance manager
+    this.gestionnaireFinance = new GestionnaireFinance();
 
         // Load existing data from the file on startup
         gestionnaireFinance.loadData();
@@ -242,7 +263,6 @@ public mainFrame() {
         RevenueDescriptionLabel = new javax.swing.JLabel();
         RevenueDescriptionField = new javax.swing.JTextField();
         RevenueMontantLabel = new javax.swing.JLabel();
-        RevenueSourceField = new javax.swing.JTextField();
         RevenueSourceLabel = new javax.swing.JLabel();
         RevenueDateLabel = new javax.swing.JLabel();
         DatePanel = new javax.swing.JPanel();
@@ -254,9 +274,9 @@ public mainFrame() {
         AjoutRevenueButton = new javax.swing.JButton();
         SupprimerRevenueButton = new javax.swing.JButton();
         ModifierRevenueButton = new javax.swing.JButton();
+        RevenueSourceField = new javax.swing.JComboBox<>();
         AjouterDepense = new javax.swing.JPanel();
         DepenseDescriptionLabel = new javax.swing.JLabel();
-        DepenseCategorieField = new javax.swing.JTextField();
         DepenseMontantLabel = new javax.swing.JLabel();
         DepenseDescriptionField = new javax.swing.JTextField();
         DepenseCategorieLabel = new javax.swing.JLabel();
@@ -270,6 +290,7 @@ public mainFrame() {
         AjoutDepenseButton = new javax.swing.JButton();
         SupprimerDepenseButton = new javax.swing.JButton();
         ModifierDepenseButton = new javax.swing.JButton();
+        DepenseCategorieField = new javax.swing.JComboBox<>();
         EcranAffichage = new javax.swing.JPanel();
         TableauBordPanel = new javax.swing.JPanel();
         WelcomeLabel = new javax.swing.JLabel();
@@ -396,12 +417,6 @@ public mainFrame() {
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, -20, 10);
         AjouterRevenue.add(RevenueMontantLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, -20, 10);
-        AjouterRevenue.add(RevenueSourceField, gridBagConstraints);
 
         RevenueSourceLabel.setText("Source");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -443,6 +458,7 @@ public mainFrame() {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         AjouterRevenue.add(DatePanel, gridBagConstraints);
 
+        RevenueMontantField.setPreferredSize(new java.awt.Dimension(72, 22));
         RevenueMontantField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RevenueMontantFieldActionPerformed(evt);
@@ -504,6 +520,14 @@ public mainFrame() {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         AjouterRevenue.add(RevenueButtons, gridBagConstraints);
 
+        RevenueSourceField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, -20, 10);
+        AjouterRevenue.add(RevenueSourceField, gridBagConstraints);
+
         Sidebar.add(AjouterRevenue);
 
         AjouterDepense.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ajouter Depense", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
@@ -517,18 +541,6 @@ public mainFrame() {
         gridBagConstraints.weighty = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, -20, 10);
         AjouterDepense.add(DepenseDescriptionLabel, gridBagConstraints);
-
-        DepenseCategorieField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DepenseCategorieFieldActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, -20, 10);
-        AjouterDepense.add(DepenseCategorieField, gridBagConstraints);
 
         DepenseMontantLabel.setText("Montant");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -636,6 +648,14 @@ public mainFrame() {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         AjouterDepense.add(RevenueButtons1, gridBagConstraints);
+
+        DepenseCategorieField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, -20, 10);
+        AjouterDepense.add(DepenseCategorieField, gridBagConstraints);
 
         Sidebar.add(AjouterDepense);
 
@@ -841,12 +861,9 @@ public mainFrame() {
             throw new IllegalArgumentException("La description ne peut pas être vide.");
         }
 
-        // 2. Get and parse the amount using the robust method
-        // Note: This assumes you have replaced the "Montant" field for Depense
-        // with a plain JTextField, just like we did for Revenue.
+        // 2. Get and parse the amount
         String montantText = DepenseMontantField.getText();
         double montant;
-
         if (montantText.trim().isEmpty()) {
             throw new IllegalArgumentException("Veuillez entrer un montant.");
         }
@@ -857,35 +874,31 @@ public mainFrame() {
             throw new IllegalArgumentException("Le montant entré n'est pas un nombre valide.");
         }
 
-        // 3. Get the category from its text field
-        String categorieName = DepenseCategorieField.getText();
-        if (categorieName.trim().isEmpty()) {
-            throw new IllegalArgumentException("La catégorie ne peut pas être vide.");
-        }
-        // Create a CategorieDepense object. We'll use a default description.
+        // 3. Get the selected category from the JComboBox
+        // MODIFIED LINE: Changed from getText() to getSelectedItem()
+        String categorieName = (String) DepenseCategorieField.getSelectedItem();
         CategorieDepense categorie = new CategorieDepense(categorieName, "Catégorie de dépense");
 
         // 4. Get the date from the expense date pickers
         int jour = (Integer) JoursDepense.getValue();
         int mois = MoisDepense.getSelectedIndex() + 1;
-        int annee = (Integer) AnneeDepense.getValue(); // Changed from parsing a string
+        int annee = (Integer) AnneeDepense.getValue();
         java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
 
         // 5. Add the new expense via the finance manager
         gestionnaireFinance.addDepense(description, dateOperation, montant, categorie);
 
-        // 6. Provide user feedback and clear the input fields
-        javax.swing.JOptionPane.showMessageDialog(this, "Dépense ajoutée avec succès!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        // 6. Provide user feedback and clear fields
+        javax.swing.JOptionPane.showMessageDialog(this, "Dépense ajoutée avec succés!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         DepenseDescriptionField.setText("");
         DepenseMontantField.setText("");
-        DepenseCategorieField.setText("");
-
+        // No need to clear the combo box
 
     } catch (IllegalArgumentException e) {
         javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur de Saisie", javax.swing.JOptionPane.ERROR_MESSAGE);
     } catch (Exception e) {
         javax.swing.JOptionPane.showMessageDialog(this, "Une erreur inattendue est survenue: " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace(); // Good for debugging
+        e.printStackTrace();
     }
     }//GEN-LAST:event_AjoutDepenseButtonActionPerformed
 
@@ -911,16 +924,13 @@ public mainFrame() {
         // TODO add your handling code here:
     }//GEN-LAST:event_RapportFiltreGenererRapportButtonActionPerformed
 
-    private void DepenseCategorieFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DepenseCategorieFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_DepenseCategorieFieldActionPerformed
-
     private void AjoutRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjoutRevenueButtonActionPerformed
         // TODO add your handling code here:
 
-    try {
+     try {
         // 1. Get the description from the text field.
-        String description = RevenueSourceField.getText();
+        // BUG FIX: Was incorrectly reading from RevenueSourceField before.
+        String description = RevenueDescriptionField.getText();
         if (description.trim().isEmpty()) {
             throw new IllegalArgumentException("La description ne peut pas être vide.");
         }
@@ -928,77 +938,73 @@ public mainFrame() {
         // 2. Get and parse the amount from the text field.
         String montantText = RevenueMontantField.getText();
         double montant;
-
         if (montantText.trim().isEmpty()) {
             throw new IllegalArgumentException("Veuillez entrer un montant.");
         }
         try {
-            // This handles different number formats like "1,234.56" or "1234,56"
             String cleanText = montantText.replaceAll("[^\\d,.]", "").replace(',', '.');
             montant = Double.parseDouble(cleanText);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Le montant entré n'est pas un nombre valide.");
         }
 
-        // 3. Get the source from its text field.
-        String sourceName = RevenueDescriptionField.getText();
-        if (sourceName.trim().isEmpty()) {
-            throw new IllegalArgumentException("La source ne peut pas être vide.");
-        }
-        // For Revenu, the source is a list. We will create a list with one source.
+        // 3. Get the selected source from the JComboBox.
+        // MODIFIED LINE: Changed from getText() to getSelectedItem()
+        String sourceName = (String) RevenueSourceField.getSelectedItem();
+        // The check for an empty string is no longer needed as the combo box always has a selection.
+
         java.util.List<SourceRevenue> sources = new java.util.ArrayList<>();
-        sources.add(new SourceRevenue(sourceName, "Source de revenu"));
+        sources.add(new SourceRevenue(sourceName, "Source de revenu")); // Description for SourceRevenue can be enhanced later if needed.
 
         // 4. Get the date from the revenue date pickers.
         int jour = (Integer) JoursRevenue.getValue();
-        int mois = MoisRevenue.getSelectedIndex() + 1; // Add 1 because index is 0-based
-        int annee = (Integer) AnneeRevenue.getValue(); // Changed from parsing a string
+        int mois = MoisRevenue.getSelectedIndex() + 1;
+        int annee = (Integer) AnneeRevenue.getValue();
         java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
 
         // 5. Add the new revenue via the finance manager.
         gestionnaireFinance.addRevenu(description, dateOperation, montant, sources);
 
-        // 7. Provide user feedback and clear the input fields for the next entry.
+        // 7. Provide user feedback and clear fields.
         javax.swing.JOptionPane.showMessageDialog(this, "Revenu ajouté avec succès!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        RevenueSourceField.setText("");
+        RevenueDescriptionField.setText(""); // Corrected from RevenueSourceField
         RevenueMontantField.setText("");
-        RevenueDescriptionField.setText("");
 
     } catch (IllegalArgumentException e) {
-        // Show specific error messages for bad input.
         javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur de Saisie", javax.swing.JOptionPane.ERROR_MESSAGE);
     } catch (Exception e) {
-        // Show a general error message for any other unexpected problems.
         javax.swing.JOptionPane.showMessageDialog(this, "Une erreur inattendue est survenue: " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace(); // This is helpful for debugging.
+        e.printStackTrace();
     }
-        
     }//GEN-LAST:event_AjoutRevenueButtonActionPerformed
 
     private void ModifierRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierRevenueButtonActionPerformed
         // TODO add your handling code here:
-    if (selectedTransactionId == -1 || !"Revenu".equals(selectedTransactionType)) {
+       if (selectedTransactionId == -1 || !"Revenu".equals(selectedTransactionType)) {
         javax.swing.JOptionPane.showMessageDialog(this, "Please select a revenue from the table to modify.");
         return;
     }
 
     try {
-        String description = RevenueSourceField.getText();
+        // BUG FIX: Correctly read description from its own field
+        String description = RevenueDescriptionField.getText();
         double montant = Double.parseDouble(RevenueMontantField.getText());
         java.time.LocalDate date = java.time.LocalDate.of(
-            (Integer) AnneeRevenue.getValue(), // Changed from parsing a string
+            (Integer) AnneeRevenue.getValue(),
             MoisRevenue.getSelectedIndex() + 1,
             (Integer) JoursRevenue.getValue()
         );
 
         java.util.List<SourceRevenue> sources = new java.util.ArrayList<>();
-        // --- THIS LINE IS FIXED ---
-        sources.add(new SourceRevenue(RevenueDescriptionField.getText(), "Source de revenu")); // Changed "" to a placeholder
+        // --- MODIFIED LINE ---
+        // Get the selected source from the combo box
+        String sourceName = (String) RevenueSourceField.getSelectedItem();
+        sources.add(new SourceRevenue(sourceName, "Source de revenu"));
 
         gestionnaireFinance.modifierRevenue(selectedTransactionId, description, date, montant, sources);
-        generateReport();
+        generateReport(); // Refresh the table
         javax.swing.JOptionPane.showMessageDialog(this, "Revenue updated successfully!");
-        selectedTransactionId = -1;
+        selectedTransactionId = -1; // Reset selection
 
     } catch (Exception e) {
         javax.swing.JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -1007,7 +1013,7 @@ public mainFrame() {
 
     private void ModifierDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierDepenseButtonActionPerformed
         // TODO add your handling code here:
-     if (selectedTransactionId == -1 || !"Dépense".equals(selectedTransactionType)) {
+         if (selectedTransactionId == -1 || !"Dépense".equals(selectedTransactionType)) {
         javax.swing.JOptionPane.showMessageDialog(this, "Please select an expense from the table to modify.");
         return;
     }
@@ -1016,18 +1022,20 @@ public mainFrame() {
         String description = DepenseDescriptionField.getText();
         double montant = Double.parseDouble(DepenseMontantField.getText());
         java.time.LocalDate date = java.time.LocalDate.of(
-             (Integer) AnneeDepense.getValue(), // Changed from parsing a string
+            (Integer) AnneeDepense.getValue(),
             MoisDepense.getSelectedIndex() + 1,
             (Integer) JoursDepense.getValue()
         );
 
-        // --- THIS LINE IS FIXED ---
-        CategorieDepense categorie = new CategorieDepense(DepenseCategorieField.getText(), "Catégorie de dépense"); // Changed "" to a placeholder
+        // --- MODIFIED LINE ---
+        // Get the selected category from the combo box
+        String categorieName = (String) DepenseCategorieField.getSelectedItem();
+        CategorieDepense categorie = new CategorieDepense(categorieName, "Catégorie de dépense");
 
         gestionnaireFinance.modifierDepense(selectedTransactionId, description, date, montant, categorie);
-        generateReport();
+        generateReport(); // Refresh the table
         javax.swing.JOptionPane.showMessageDialog(this, "Expense updated successfully!");
-        selectedTransactionId = -1;
+        selectedTransactionId = -1; // Reset selection
 
     } catch (Exception e) {
         javax.swing.JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -1037,66 +1045,64 @@ public mainFrame() {
     private void SupprimerRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerRevenueButtonActionPerformed
         // TODO add your handling code here:
         if (selectedTransactionId == -1 || !"Revenu".equals(selectedTransactionType)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Please select a revenue from the table to delete.");
-            return;
-        }
+        javax.swing.JOptionPane.showMessageDialog(this, "Please select a revenue from the table to modify.");
+        return;
+    }
 
-        // Ask the user for confirmation before deleting.
-        int confirmation = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            "Are you sure you want to delete this revenue?",
-            "Confirm Deletion",
-            javax.swing.JOptionPane.YES_NO_OPTION
+    try {
+        // BUG FIX: Correctly read description from its own field
+        String description = RevenueDescriptionField.getText();
+        double montant = Double.parseDouble(RevenueMontantField.getText());
+        java.time.LocalDate date = java.time.LocalDate.of(
+            (Integer) AnneeRevenue.getValue(),
+            MoisRevenue.getSelectedIndex() + 1,
+            (Integer) JoursRevenue.getValue()
         );
 
-        if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
-            // If the user confirms, call the remove method.
-            gestionnaireFinance.removeRevenuById(selectedTransactionId);
+        java.util.List<SourceRevenue> sources = new java.util.ArrayList<>();
+        // --- MODIFIED LINE ---
+        // Get the selected source from the combo box
+        String sourceName = (String) RevenueSourceField.getSelectedItem();
+        sources.add(new SourceRevenue(sourceName, "Source de revenu"));
 
-            // Refresh the table to show the change.
-            generateReport();
+        gestionnaireFinance.modifierRevenue(selectedTransactionId, description, date, montant, sources);
+        generateReport(); // Refresh the table
+        javax.swing.JOptionPane.showMessageDialog(this, "Revenue updated successfully!");
+        selectedTransactionId = -1; // Reset selection
 
-            // Clear the form fields and reset the selection.
-            RevenueDescriptionField.setText("");
-            RevenueMontantField.setText("");
-            RevenueSourceField.setText("");
-            selectedTransactionId = -1;
-
-            javax.swing.JOptionPane.showMessageDialog(this, "Revenue deleted successfully.");
-        }
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_SupprimerRevenueButtonActionPerformed
 
     private void SupprimerDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerDepenseButtonActionPerformed
         // TODO add your handling code here:
         
-        if (selectedTransactionId == -1 || !"Dépense".equals(selectedTransactionType)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Please select an expense from the table to delete.");
-            return;
-        }
+           if (selectedTransactionId == -1 || !"Dépense".equals(selectedTransactionType)) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Please select an expense from the table to delete.");
+        return;
+    }
 
-        // Ask the user for confirmation.
-        int confirmation = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            "Are you sure you want to delete this expense?",
-            "Confirm Deletion",
-            javax.swing.JOptionPane.YES_NO_OPTION
-        );
+    int confirmation = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Are you sure you want to delete this expense?",
+        "Confirm Deletion",
+        javax.swing.JOptionPane.YES_NO_OPTION
+    );
 
-        if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
-            // If the user confirms, call the remove method.
-            gestionnaireFinance.removeDepenseById(selectedTransactionId);
+    if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
+        gestionnaireFinance.removeDepenseById(selectedTransactionId);
+        generateReport(); // Refresh table
 
-            // Refresh the table.
-            generateReport();
+        // Clear the form fields and reset selection
+        DepenseDescriptionField.setText("");
+        DepenseMontantField.setText("");
+        // --- MODIFIED LINE ---
+        DepenseCategorieField.setSelectedIndex(0); // Reset combo box to the first item
+        selectedTransactionId = -1;
 
-            // Clear the form fields and reset the selection.
-            DepenseDescriptionField.setText("");
-            DepenseMontantField.setText("");
-            DepenseCategorieField.setText("");
-            selectedTransactionId = -1;
-
-            javax.swing.JOptionPane.showMessageDialog(this, "Expense deleted successfully.");
-        }
+        javax.swing.JOptionPane.showMessageDialog(this, "Expense deleted successfully.");
+    }
     }//GEN-LAST:event_SupprimerDepenseButtonActionPerformed
 
     private void ChartFiltreAfficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChartFiltreAfficherButtonActionPerformed
@@ -1125,7 +1131,7 @@ public mainFrame() {
     private javax.swing.JLabel ChartFiltreAnneeLabel;
     private javax.swing.JSpinner ChartFiltreAnneeSpinner;
     private javax.swing.JPanel DatePanel;
-    private javax.swing.JTextField DepenseCategorieField;
+    private javax.swing.JComboBox<String> DepenseCategorieField;
     private javax.swing.JLabel DepenseCategorieLabel;
     private javax.swing.JLabel DepenseDateLabel;
     private javax.swing.JPanel DepenseDatePanel;
@@ -1163,7 +1169,7 @@ public mainFrame() {
     private javax.swing.JLabel RevenueDescriptionLabel;
     private javax.swing.JTextField RevenueMontantField;
     private javax.swing.JLabel RevenueMontantLabel;
-    private javax.swing.JTextField RevenueSourceField;
+    private javax.swing.JComboBox<String> RevenueSourceField;
     private javax.swing.JLabel RevenueSourceLabel;
     private javax.swing.JPanel Sidebar;
     private javax.swing.JButton SupprimerDepenseButton;
