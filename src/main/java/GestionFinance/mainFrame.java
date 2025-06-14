@@ -31,7 +31,7 @@ public class mainFrame extends javax.swing.JFrame {
      * Initialise les sélecteurs de date pour les revenus et dépenses.
      * Configure les spinners et combobox pour les jours, mois et années.
      */
-    private void initializeDatePickers() {
+    private void initialiserSelecteurDate() {
     java.time.LocalDate today = java.time.LocalDate.now();
     int currentYear = today.getYear(); // <- Déclaration de 'currentYear'
     String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"}; // <- Déclaration de 'months'
@@ -71,7 +71,7 @@ public class mainFrame extends javax.swing.JFrame {
      * Génère un rapport financier basé sur les filtres sélectionnés.
      * Affiche les revenus et dépenses dans un tableau et calcule les totaux.
      */
-    private void generateReport() {
+    private void genererRapport() {
     try {
         int annee = (Integer) RapportFiltreAnneeSpinner.getValue();
         int mois = RapportFiltreMoisCombox.getSelectedIndex() + 1;
@@ -124,7 +124,7 @@ public class mainFrame extends javax.swing.JFrame {
      * Affiche un graphique annuel des revenus et dépenses.
      * Crée un graphique à barres montrant l'évolution mensuelle.
      */
-    private void displayYearlyChart() {
+    private void afficherGraphiqueAnnuel() {
         try {
             int annee = (Integer) ChartFiltreAnneeSpinner.getValue();
 
@@ -176,7 +176,7 @@ public class mainFrame extends javax.swing.JFrame {
      * Configure les listes déroulantes pour les catégories de dépenses et sources de revenus.
      * Initialise les valeurs prédéfinies pour ces listes.
      */
-    private void setupComboBoxes() {
+    private void configurerCombobox() {
     // Définir les listes prédéfinies des catégories et sources
     String[] expenseCategories = {
         "Nourriture", "Transport", "Logement", "Factures", "Loisirs", "Santé", "Autre"
@@ -221,7 +221,7 @@ public class mainFrame extends javax.swing.JFrame {
         // Initialiser le gestionnaire de finances
         this.gestionnaireFinance = new GestionnaireFinance();
         
-        setupComboBoxes();
+        configurerCombobox();
         
         // Initialiser le gestionnaire de finances
     this.gestionnaireFinance = new GestionnaireFinance();
@@ -230,7 +230,7 @@ public class mainFrame extends javax.swing.JFrame {
         gestionnaireFinance.chargerDonnees();
         
         // Rafraîchir le tableau avec les données chargées
-        generateReport();
+        genererRapport();
 
         // Cet écouteur sauvegarde les données lorsque l'utilisateur clique sur le bouton 'X' pour fermer la fenêtre
         this.addWindowListener(new WindowAdapter() {
@@ -302,11 +302,11 @@ public class mainFrame extends javax.swing.JFrame {
         RapportFiltreGenererRapportButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generateReport();
+                genererRapport();
             }
         });
         
-        initializeDatePickers();
+        initialiserSelecteurDate();
     }
 
     /**
@@ -1056,7 +1056,7 @@ public class mainFrame extends javax.swing.JFrame {
         sources.add(new SourceRevenue(sourceName, "Source de revenu"));
 
         gestionnaireFinance.modifierRevenue(idTransactionSelectionnee, description, date, montant, sources);
-        generateReport(); // Rafraîchir le tableau
+        genererRapport(); // Rafraîchir le tableau
         javax.swing.JOptionPane.showMessageDialog(this, "Revenu mis à jour avec succès!");
         idTransactionSelectionnee = -1; // Réinitialiser la sélection
 
@@ -1087,7 +1087,7 @@ public class mainFrame extends javax.swing.JFrame {
         CategorieDepense categorie = new CategorieDepense(categorieName, "Catégorie de dépense");
 
         gestionnaireFinance.modifierDepense(idTransactionSelectionnee, description, date, montant, categorie);
-        generateReport(); // Rafraîchir le tableau
+        genererRapport(); // Rafraîchir le tableau
         javax.swing.JOptionPane.showMessageDialog(this, "Dépense mise à jour avec succès!");
         idTransactionSelectionnee = -1; // Réinitialiser la sélection
 
@@ -1112,7 +1112,7 @@ public class mainFrame extends javax.swing.JFrame {
 
         if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
             gestionnaireFinance.supprimerRevenuParId(idTransactionSelectionnee);
-            generateReport(); // Rafraîchir le tableau
+            genererRapport(); // Rafraîchir le tableau
 
             // Effacer les champs du formulaire et réinitialiser la sélection
             RevenueDescriptionField.setText("");
@@ -1141,7 +1141,7 @@ public class mainFrame extends javax.swing.JFrame {
 
     if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
         gestionnaireFinance.supprimerDepenseParId(idTransactionSelectionnee);
-        generateReport(); // Rafraîchir le tableau
+        genererRapport(); // Rafraîchir le tableau
 
         // Effacer les champs du formulaire et réinitialiser la sélection
         DepenseDescriptionField.setText("");
@@ -1155,7 +1155,7 @@ public class mainFrame extends javax.swing.JFrame {
 
     private void ChartFiltreAfficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChartFiltreAfficherButtonActionPerformed
         // TODO add your handling code here:
-        displayYearlyChart();
+        afficherGraphiqueAnnuel();
     }//GEN-LAST:event_ChartFiltreAfficherButtonActionPerformed
 
     
