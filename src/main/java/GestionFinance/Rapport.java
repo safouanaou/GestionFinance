@@ -31,7 +31,7 @@ public class Rapport {
      * @param annee L'année
      * @return Liste des revenus correspondants
      */
-    public List<Revenue> getMonthlyRevenues(int mois, int annee) {
+    public List<Revenue> getRevenuesMensuelle(int mois, int annee) {
         return tousRevenus.stream()
                 .filter(r -> r.getDateOperation().getMonthValue() == mois && r.getDateOperation().getYear() == annee)
                 .collect(Collectors.toList());
@@ -43,7 +43,7 @@ public class Rapport {
      * @param annee L'année
      * @return Liste des dépenses correspondantes
      */
-    public List<Depense> getMonthlyExpenses(int mois, int annee) {
+    public List<Depense> getDepensesMensuelle(int mois, int annee) {
         return toutesDepenses.stream()
                 .filter(d -> d.getDateOperation().getMonthValue() == mois && d.getDateOperation().getYear() == annee)
                 .collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class Rapport {
      * @param revenus Liste des revenus
      * @return Somme totale des revenus
      */
-    public double calculateTotalRevenue(List<Revenue> revenus) {
+    public double calculerTotalRevenue(List<Revenue> revenus) {
         return revenus.stream()
                 .mapToDouble(Revenue::getMontant)
                 .sum();
@@ -65,7 +65,7 @@ public class Rapport {
      * @param depenses Liste des dépenses
      * @return Somme totale des dépenses
      */
-    public double calculateTotalExpense(List<Depense> depenses) {
+    public double calculerTotalDepense(List<Depense> depenses) {
         return depenses.stream()
                 .mapToDouble(Depense::getMontant)
                 .sum();
@@ -77,11 +77,11 @@ public class Rapport {
      * @param annee L'année
      * @return Rapport mensuel formaté
      */
-    public String generateMonthlyReport(int mois, int annee) {
+    public String genererRapportMensuelle(int mois, int annee) {
         String rapport = "--- Rapport Financier Mensuel - " + mois + "/" + annee + " ---\n\n";
 
-        List<Revenue> revenusMensuels = getMonthlyRevenues(mois, annee);
-        List<Depense> depensesMensuelles = getMonthlyExpenses(mois, annee);
+        List<Revenue> revenusMensuels = getRevenuesMensuelle(mois, annee);
+        List<Depense> depensesMensuelles = getDepensesMensuelle(mois, annee);
         
         // ... rest of the original method logic ...
 

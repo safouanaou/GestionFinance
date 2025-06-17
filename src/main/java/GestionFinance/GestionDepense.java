@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Implémente Serializable pour permettre la sauvegarde des données.
  * Cette classe sert de base pour les classes Revenue et Depense.
  */
-public class GestionDepense implements Serializable {
+public abstract class GestionDepense implements Serializable {
     /** Identifiant unique de l'opération */
     private int id;
     /** Compteur pour générer des IDs uniques */

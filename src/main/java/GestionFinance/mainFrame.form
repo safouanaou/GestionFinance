@@ -481,16 +481,11 @@
             <Component class="javax.swing.JComboBox" name="RevenueSourceField">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="4">
-                    <StringItem index="0" value="Item 1"/>
-                    <StringItem index="1" value="Item 2"/>
-                    <StringItem index="2" value="Item 3"/>
-                    <StringItem index="3" value="Item 4"/>
-                  </StringArray>
+                  <StringArray count="0"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;SourceRevenue&gt;"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -715,16 +710,11 @@
             <Component class="javax.swing.JComboBox" name="DepenseCategorieField">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="4">
-                    <StringItem index="0" value="Item 1"/>
-                    <StringItem index="1" value="Item 2"/>
-                    <StringItem index="2" value="Item 3"/>
-                    <StringItem index="3" value="Item 4"/>
-                  </StringArray>
+                  <StringArray count="0"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;CategorieDepense&gt;"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -791,7 +781,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="reportTopAreaPanel">
+            <Container class="javax.swing.JPanel" name="RapportNordPanel">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
                   <BorderConstraints direction="North"/>
@@ -802,7 +792,7 @@
                 <Property name="axis" type="int" value="1"/>
               </Layout>
               <SubComponents>
-                <Container class="javax.swing.JPanel" name="ReportFilterPanel">
+                <Container class="javax.swing.JPanel" name="FiltreRapportPanel">
                   <Properties>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[505, 40]"/>
@@ -883,7 +873,7 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="ReportSummaryPanel">
+                <Container class="javax.swing.JPanel" name="SommaireRapportPanel">
                   <SubComponents>
                     <Container class="javax.swing.JPanel" name="TotalRevenuePanel">
                       <Properties>
@@ -922,7 +912,7 @@
                         </Component>
                       </SubComponents>
                     </Container>
-                    <Container class="javax.swing.JPanel" name="TotalExpensesPanel">
+                    <Container class="javax.swing.JPanel" name="TotalDepensePanel">
                       <Properties>
                         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                           <Color blue="a4" green="a4" red="fd" type="rgb"/>
@@ -1047,11 +1037,11 @@
                       </Parameters>
                     </CodeStatement>
                     <CodeStatement>
-                      <CodeExpression id="16_ReportSummaryPanel">
-                        <CodeVariable name="ReportSummaryPanel" type="8194" declaredType="javax.swing.JPanel"/>
+                      <CodeExpression id="16_SommaireRapportPanel">
+                        <CodeVariable name="SommaireRapportPanel" type="8194" declaredType="javax.swing.JPanel"/>
                         <ExpressionOrigin>
                           <ExpressionProvider type="ComponentRef">
-                            <ComponentRef name="ReportSummaryPanel"/>
+                            <ComponentRef name="SommaireRapportPanel"/>
                           </ExpressionProvider>
                         </ExpressionOrigin>
                       </CodeExpression>
@@ -1063,7 +1053,7 @@
                       </Parameters>
                     </CodeStatement>
                     <CodeStatement>
-                      <CodeExpression id="16_ReportSummaryPanel"/>
+                      <CodeExpression id="16_SommaireRapportPanel"/>
                       <StatementProvider type="CodeMethod">
                         <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
                       </StatementProvider>
@@ -1079,23 +1069,23 @@
                       </Parameters>
                     </CodeStatement>
                     <CodeStatement>
-                      <CodeExpression id="16_ReportSummaryPanel"/>
+                      <CodeExpression id="16_SommaireRapportPanel"/>
                       <StatementProvider type="CodeMethod">
                         <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
                       </StatementProvider>
                       <Parameters>
-                        <CodeExpression id="18_TotalExpensesPanel">
-                          <CodeVariable name="TotalExpensesPanel" type="8194" declaredType="javax.swing.JPanel"/>
+                        <CodeExpression id="18_TotalDepensePanel">
+                          <CodeVariable name="TotalDepensePanel" type="8194" declaredType="javax.swing.JPanel"/>
                           <ExpressionOrigin>
                             <ExpressionProvider type="ComponentRef">
-                              <ComponentRef name="TotalExpensesPanel"/>
+                              <ComponentRef name="TotalDepensePanel"/>
                             </ExpressionProvider>
                           </ExpressionOrigin>
                         </CodeExpression>
                       </Parameters>
                     </CodeStatement>
                     <CodeStatement>
-                      <CodeExpression id="16_ReportSummaryPanel"/>
+                      <CodeExpression id="16_SommaireRapportPanel"/>
                       <StatementProvider type="CodeMethod">
                         <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
                       </StatementProvider>
@@ -1197,7 +1187,8 @@
     </Container>
     <Component class="javax.swing.JLabel" name="Footer">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Footer"/>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="   "/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

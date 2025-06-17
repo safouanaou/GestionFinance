@@ -97,7 +97,7 @@ public class mainFrame extends javax.swing.JFrame {
 
         if ("Tout".equals(choixAffichage) || "Revenus".equals(choixAffichage)) {
             for (Revenue r : revenusMensuels) {
-                String nomsSources = r.getSources().stream().map(SourceRevenue::getNom).collect(java.util.stream.Collectors.joining(", "));
+                String nomsSources = r.getSource().getNom();
                 modele.addRow(new Object[]{r.getId(), "Revenu", r.getDescription(), r.getDateOperation(), r.getMontant(), nomsSources});
             }
         }
@@ -134,11 +134,11 @@ public class mainFrame extends javax.swing.JFrame {
             String[] mois = {"Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"};
 
             for (int moisIndex = 1; moisIndex <= 12; moisIndex++) {
-                java.util.List<Revenue> revenusMensuels = rapport.getMonthlyRevenues(moisIndex, annee);
-                java.util.List<Depense> depensesMensuelles = rapport.getMonthlyExpenses(moisIndex, annee);
+                java.util.List<Revenue> revenusMensuels = rapport.getRevenuesMensuelle(moisIndex, annee);
+                java.util.List<Depense> depensesMensuelles = rapport.getDepensesMensuelle(moisIndex, annee);
 
-                double totalRevenus = rapport.calculateTotalRevenue(revenusMensuels);
-                double totalDepenses = rapport.calculateTotalExpense(depensesMensuelles);
+                double totalRevenus = rapport.calculerTotalRevenue(revenusMensuels);
+                double totalDepenses = rapport.calculerTotalDepense(depensesMensuelles);
 
                 dataset.addValue(totalRevenus, "Revenu", mois[moisIndex - 1]);
                 dataset.addValue(totalDepenses, "Dépense", mois[moisIndex - 1]);
@@ -177,20 +177,20 @@ public class mainFrame extends javax.swing.JFrame {
      * Initialise les valeurs prédéfinies pour ces listes.
      */
     private void configurerCombobox() {
-    // Définir les listes prédéfinies des catégories et sources
-    String[] expenseCategories = {
-        "Nourriture", "Transport", "Logement", "Factures", "Loisirs", "Santé", "Autre"
-    };
-    String[] revenueSources = {
-        "Salaire", "Freelance", "Investissements", "Cadeaux", "Autre"
-    };
+        // Remplir la liste déroulante des catégories de dépenses
+        javax.swing.DefaultComboBoxModel<CategorieDepense> modeleCategories = new javax.swing.DefaultComboBoxModel<>();
+        for (CategorieDepense categorie : gestionnaireFinance.getCategories()) {
+            modeleCategories.addElement(categorie);
+        }
+        DepenseCategorieField.setModel(modeleCategories);
 
-    // Remplir la liste déroulante des catégories de dépenses
-    DepenseCategorieField.setModel(new javax.swing.DefaultComboBoxModel<>(expenseCategories));
-
-    // Remplir la liste déroulante des sources de revenus
-    RevenueSourceField.setModel(new javax.swing.DefaultComboBoxModel<>(revenueSources));
-}
+        // Remplir la liste déroulante des sources de revenus
+        javax.swing.DefaultComboBoxModel<SourceRevenue> modeleSources = new javax.swing.DefaultComboBoxModel<>();
+        for (SourceRevenue source : gestionnaireFinance.getSourcesDeRevenu()) {
+            modeleSources.addElement(source);
+        }
+        RevenueSourceField.setModel(modeleSources);
+    }
 
     /**
      * Point d'entrée principal de l'application.
@@ -221,11 +221,9 @@ public class mainFrame extends javax.swing.JFrame {
         // Initialiser le gestionnaire de finances
         this.gestionnaireFinance = new GestionnaireFinance();
         
+        // Configurer les ComboBoxes avec les données du gestionnaire
         configurerCombobox();
         
-        // Initialiser le gestionnaire de finances
-    this.gestionnaireFinance = new GestionnaireFinance();
-
         // Charger les données existantes du fichier au démarrage
         gestionnaireFinance.chargerDonnees();
         
@@ -299,12 +297,12 @@ public class mainFrame extends javax.swing.JFrame {
         }
 });
         
-        RapportFiltreGenererRapportButton.addActionListener(new java.awt.event.ActionListener() {
+        /**RapportFiltreGenererRapportButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 genererRapport();
             }
-        });
+        });*/
         
         initialiserSelecteurDate();
     }
@@ -361,8 +359,8 @@ public class mainFrame extends javax.swing.JFrame {
         TableauBordPanel = new javax.swing.JPanel();
         WelcomeLabel = new javax.swing.JLabel();
         RapportMensuelPanel = new javax.swing.JPanel();
-        reportTopAreaPanel = new javax.swing.JPanel();
-        ReportFilterPanel = new javax.swing.JPanel();
+        RapportNordPanel = new javax.swing.JPanel();
+        FiltreRapportPanel = new javax.swing.JPanel();
         RapportFiltreAnneeLabel = new javax.swing.JLabel();
         RapportFiltreAnneeSpinner = new javax.swing.JSpinner();
         RapportFiltreMoisLabel = new javax.swing.JLabel();
@@ -370,11 +368,11 @@ public class mainFrame extends javax.swing.JFrame {
         RapportFiltreAfficherTout = new javax.swing.JLabel();
         RapportFiltreAfficherToutCombox = new javax.swing.JComboBox<>();
         RapportFiltreGenererRapportButton = new javax.swing.JButton();
-        ReportSummaryPanel = new javax.swing.JPanel();
+        SommaireRapportPanel = new javax.swing.JPanel();
         TotalRevenuePanel = new javax.swing.JPanel();
         TotalRevenueLabel = new javax.swing.JLabel();
         TotalRevenueMontantLabel = new javax.swing.JLabel();
-        TotalExpensesPanel = new javax.swing.JPanel();
+        TotalDepensePanel = new javax.swing.JPanel();
         TotalDepenseLabel = new javax.swing.JLabel();
         TotalDepenseMontantLabel = new javax.swing.JLabel();
         NetBalancePanel = new javax.swing.JPanel();
@@ -584,7 +582,6 @@ public class mainFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         AjouterRevenue.add(RevenueButtons, gridBagConstraints);
 
-        RevenueSourceField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -713,7 +710,6 @@ public class mainFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         AjouterDepense.add(RevenueButtons1, gridBagConstraints);
 
-        DepenseCategorieField.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -740,28 +736,28 @@ public class mainFrame extends javax.swing.JFrame {
         RapportMensuelPanel.setBackground(new java.awt.Color(248, 248, 248));
         RapportMensuelPanel.setLayout(new java.awt.BorderLayout());
 
-        reportTopAreaPanel.setLayout(new javax.swing.BoxLayout(reportTopAreaPanel, javax.swing.BoxLayout.Y_AXIS));
+        RapportNordPanel.setLayout(new javax.swing.BoxLayout(RapportNordPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        ReportFilterPanel.setPreferredSize(new java.awt.Dimension(505, 40));
-        ReportFilterPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 10));
+        FiltreRapportPanel.setPreferredSize(new java.awt.Dimension(505, 40));
+        FiltreRapportPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 10));
 
         RapportFiltreAnneeLabel.setText("Année");
-        ReportFilterPanel.add(RapportFiltreAnneeLabel);
+        FiltreRapportPanel.add(RapportFiltreAnneeLabel);
 
         RapportFiltreAnneeSpinner.setMinimumSize(new java.awt.Dimension(67, 26));
         RapportFiltreAnneeSpinner.setName(""); // NOI18N
         RapportFiltreAnneeSpinner.setOpaque(true);
         RapportFiltreAnneeSpinner.setPreferredSize(new java.awt.Dimension(70, 26));
-        ReportFilterPanel.add(RapportFiltreAnneeSpinner);
+        FiltreRapportPanel.add(RapportFiltreAnneeSpinner);
 
         RapportFiltreMoisLabel.setText("Mois");
-        ReportFilterPanel.add(RapportFiltreMoisLabel);
+        FiltreRapportPanel.add(RapportFiltreMoisLabel);
 
         RapportFiltreMoisCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        ReportFilterPanel.add(RapportFiltreMoisCombox);
+        FiltreRapportPanel.add(RapportFiltreMoisCombox);
 
         RapportFiltreAfficherTout.setText("Afficher");
-        ReportFilterPanel.add(RapportFiltreAfficherTout);
+        FiltreRapportPanel.add(RapportFiltreAfficherTout);
 
         RapportFiltreAfficherToutCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tout\t", "Revenues", "Depenses", " " }));
         RapportFiltreAfficherToutCombox.addActionListener(new java.awt.event.ActionListener() {
@@ -769,7 +765,7 @@ public class mainFrame extends javax.swing.JFrame {
                 RapportFiltreAfficherToutComboxActionPerformed(evt);
             }
         });
-        ReportFilterPanel.add(RapportFiltreAfficherToutCombox);
+        FiltreRapportPanel.add(RapportFiltreAfficherToutCombox);
 
         RapportFiltreGenererRapportButton.setText("Générer Rapport");
         RapportFiltreGenererRapportButton.addActionListener(new java.awt.event.ActionListener() {
@@ -777,13 +773,13 @@ public class mainFrame extends javax.swing.JFrame {
                 RapportFiltreGenererRapportButtonActionPerformed(evt);
             }
         });
-        ReportFilterPanel.add(RapportFiltreGenererRapportButton);
+        FiltreRapportPanel.add(RapportFiltreGenererRapportButton);
 
-        reportTopAreaPanel.add(ReportFilterPanel);
+        RapportNordPanel.add(FiltreRapportPanel);
 
         java.awt.FlowLayout flowLayout2 = new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 15);
         flowLayout2.setAlignOnBaseline(true);
-        ReportSummaryPanel.setLayout(flowLayout2);
+        SommaireRapportPanel.setLayout(flowLayout2);
 
         TotalRevenuePanel.setBackground(new java.awt.Color(157, 255, 170));
         TotalRevenuePanel.setMaximumSize(new java.awt.Dimension(3500, 3500));
@@ -798,22 +794,22 @@ public class mainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         TotalRevenuePanel.add(TotalRevenueMontantLabel, gridBagConstraints);
 
-        ReportSummaryPanel.add(TotalRevenuePanel);
+        SommaireRapportPanel.add(TotalRevenuePanel);
 
-        TotalExpensesPanel.setBackground(new java.awt.Color(253, 164, 164));
-        TotalExpensesPanel.setMaximumSize(new java.awt.Dimension(3500, 3500));
-        TotalExpensesPanel.setPreferredSize(new java.awt.Dimension(180, 80));
-        TotalExpensesPanel.setLayout(new java.awt.GridBagLayout());
+        TotalDepensePanel.setBackground(new java.awt.Color(253, 164, 164));
+        TotalDepensePanel.setMaximumSize(new java.awt.Dimension(3500, 3500));
+        TotalDepensePanel.setPreferredSize(new java.awt.Dimension(180, 80));
+        TotalDepensePanel.setLayout(new java.awt.GridBagLayout());
 
         TotalDepenseLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TotalDepenseLabel.setText("TOTAL DEPENSES");
-        TotalExpensesPanel.add(TotalDepenseLabel, new java.awt.GridBagConstraints());
+        TotalDepensePanel.add(TotalDepenseLabel, new java.awt.GridBagConstraints());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        TotalExpensesPanel.add(TotalDepenseMontantLabel, gridBagConstraints);
+        TotalDepensePanel.add(TotalDepenseMontantLabel, gridBagConstraints);
 
-        ReportSummaryPanel.add(TotalExpensesPanel);
+        SommaireRapportPanel.add(TotalDepensePanel);
 
         NetBalancePanel.setBackground(new java.awt.Color(237, 197, 255));
         NetBalancePanel.setMaximumSize(new java.awt.Dimension(3500, 3500));
@@ -828,11 +824,11 @@ public class mainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         NetBalancePanel.add(BalanceMontantLabel, gridBagConstraints);
 
-        ReportSummaryPanel.add(NetBalancePanel);
+        SommaireRapportPanel.add(NetBalancePanel);
 
-        reportTopAreaPanel.add(ReportSummaryPanel);
+        RapportNordPanel.add(SommaireRapportPanel);
 
-        RapportMensuelPanel.add(reportTopAreaPanel, java.awt.BorderLayout.NORTH);
+        RapportMensuelPanel.add(RapportNordPanel, java.awt.BorderLayout.NORTH);
 
         TableRapport.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -878,7 +874,8 @@ public class mainFrame extends javax.swing.JFrame {
 
         getContentPane().add(EcranAffichage, java.awt.BorderLayout.CENTER);
 
-        Footer.setText("Footer");
+        Footer.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Footer.setText("   ");
         getContentPane().add(Footer, java.awt.BorderLayout.PAGE_END);
 
         pack();
@@ -910,55 +907,6 @@ public class mainFrame extends javax.swing.JFrame {
     layout.show(EcranAffichage, "GraphView");
     }//GEN-LAST:event_GraphButtonActionPerformed
 
-    private void AjoutDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjoutDepenseButtonActionPerformed
-        // TODO Ajouter votre code de gestion ici
-        try {
-        // 1. Obtenir la description depuis le champ de texte
-        String description = DepenseDescriptionField.getText();
-        if (description.trim().isEmpty()) {
-            throw new IllegalArgumentException("La description ne peut pas être vide.");
-        }
-
-        // 2. Obtenir et analyser le montant
-        String montantText = DepenseMontantField.getText();
-        double montant;
-        if (montantText.trim().isEmpty()) {
-            throw new IllegalArgumentException("Veuillez entrer un montant.");
-        }
-        try {
-            String cleanText = montantText.replaceAll("[^\\d,.]", "").replace(',', '.');
-            montant = Double.parseDouble(cleanText);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Le montant entré n'est pas un nombre valide.");
-        }
-
-        // 3. Obtenir la catégorie sélectionnée depuis la JComboBox
-        String categorieName = (String) DepenseCategorieField.getSelectedItem();
-        CategorieDepense categorie = new CategorieDepense(categorieName, "Catégorie de dépense");
-
-        // 4. Obtenir la date depuis les sélecteurs de date de dépense
-        int jour = (Integer) JoursDepense.getValue();
-        int mois = MoisDepense.getSelectedIndex() + 1;
-        int annee = (Integer) AnneeDepense.getValue();
-        java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
-
-        // 5. Ajouter la nouvelle dépense via le gestionnaire de finances
-        gestionnaireFinance.ajouterDepense(description, dateOperation, montant, categorie);
-
-        // 6. Fournir un retour à l'utilisateur et effacer les champs
-        javax.swing.JOptionPane.showMessageDialog(this, "Dépense ajoutée avec succés!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        DepenseDescriptionField.setText("");
-        DepenseMontantField.setText("");
-        // Pas besoin d'effacer la liste déroulante
-
-    } catch (IllegalArgumentException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur de Saisie", javax.swing.JOptionPane.ERROR_MESSAGE);
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur inattendue est survenue: " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
-    }//GEN-LAST:event_AjoutDepenseButtonActionPerformed
-
     private void MoisRevenueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MoisRevenueActionPerformed
         // TODO add your handling code here:
         
@@ -979,122 +927,45 @@ public class mainFrame extends javax.swing.JFrame {
 
     private void RapportFiltreGenererRapportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RapportFiltreGenererRapportButtonActionPerformed
         // TODO add your handling code here:
+        genererRapport();
     }//GEN-LAST:event_RapportFiltreGenererRapportButtonActionPerformed
 
-    private void AjoutRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjoutRevenueButtonActionPerformed
+    private void ChartFiltreAfficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChartFiltreAfficherButtonActionPerformed
+        // TODO add your handling code here:
+        afficherGraphiqueAnnuel();
+    }//GEN-LAST:event_ChartFiltreAfficherButtonActionPerformed
+
+
+    private void SupprimerDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerDepenseButtonActionPerformed
         // TODO Ajouter votre code de gestion ici
 
-     try {
-        // 1. Obtenir la description depuis le champ de texte
-        String description = RevenueDescriptionField.getText();
-        if (description.trim().isEmpty()) {
-            throw new IllegalArgumentException("La description ne peut pas être vide.");
+        if (idTransactionSelectionnee == -1 || !"Dépense".equals(typeTransactionSelectionne)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner une dépense dans le tableau pour la supprimer.");
+            return;
         }
 
-        // 2. Obtenir et analyser le montant depuis le champ de texte
-        String montantText = RevenueMontantField.getText();
-        double montant;
-        if (montantText.trim().isEmpty()) {
-            throw new IllegalArgumentException("Veuillez entrer un montant.");
-        }
-        try {
-            String cleanText = montantText.replaceAll("[^\\d,.]", "").replace(',', '.');
-            montant = Double.parseDouble(cleanText);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Le montant entré n'est pas un nombre valide.");
-        }
-
-        // 3. Obtenir la source sélectionnée depuis la JComboBox
-        String sourceName = (String) RevenueSourceField.getSelectedItem();
-
-        java.util.List<SourceRevenue> sources = new java.util.ArrayList<>();
-        sources.add(new SourceRevenue(sourceName, "Source de revenu"));
-
-        // 4. Obtenir la date depuis les sélecteurs de date de revenu
-        int jour = (Integer) JoursRevenue.getValue();
-        int mois = MoisRevenue.getSelectedIndex() + 1;
-        int annee = (Integer) AnneeRevenue.getValue();
-        java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
-
-        // 5. Ajouter le nouveau revenu via le gestionnaire de finances
-        gestionnaireFinance.ajouterRevenu(description, dateOperation, montant, sources);
-
-        // 6. Fournir un retour à l'utilisateur et effacer les champs
-        javax.swing.JOptionPane.showMessageDialog(this, "Revenu ajouté avec succès!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        RevenueDescriptionField.setText("");
-        RevenueMontantField.setText("");
-
-    } catch (IllegalArgumentException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur de Saisie", javax.swing.JOptionPane.ERROR_MESSAGE);
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur inattendue est survenue: " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
-    }//GEN-LAST:event_AjoutRevenueButtonActionPerformed
-
-    private void ModifierRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierRevenueButtonActionPerformed
-        // TODO Ajouter votre code de gestion ici
-       if (idTransactionSelectionnee == -1 || !"Revenu".equals(typeTransactionSelectionne)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner un revenu dans le tableau pour le modifier.");
-        return;
-    }
-
-    try {
-        // CORRECTION DE BUG: Lire correctement la description depuis son propre champ
-        String description = RevenueDescriptionField.getText();
-        double montant = Double.parseDouble(RevenueMontantField.getText());
-        java.time.LocalDate date = java.time.LocalDate.of(
-            (Integer) AnneeRevenue.getValue(),
-            MoisRevenue.getSelectedIndex() + 1,
-            (Integer) JoursRevenue.getValue()
+        int confirmation = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "Êtes-vous sûr de vouloir supprimer cette dépense ?",
+            "Confirmer la suppression",
+            javax.swing.JOptionPane.YES_NO_OPTION
         );
 
-        java.util.List<SourceRevenue> sources = new java.util.ArrayList<>();
-        // --- LIGNE MODIFIÉE ---
-        // Obtenir la source sélectionnée depuis la liste déroulante
-        String sourceName = (String) RevenueSourceField.getSelectedItem();
-        sources.add(new SourceRevenue(sourceName, "Source de revenu"));
+        if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
+            gestionnaireFinance.supprimerDepenseParId(idTransactionSelectionnee);
+            genererRapport(); // Rafraîchir le tableau
 
-        gestionnaireFinance.modifierRevenue(idTransactionSelectionnee, description, date, montant, sources);
-        genererRapport(); // Rafraîchir le tableau
-        javax.swing.JOptionPane.showMessageDialog(this, "Revenu mis à jour avec succès!");
-        idTransactionSelectionnee = -1; // Réinitialiser la sélection
+            // Effacer les champs du formulaire et réinitialiser la sélection
+            DepenseDescriptionField.setText("");
+            DepenseMontantField.setText("");
+            DepenseCategorieField.setSelectedIndex(0); // Réinitialiser la liste déroulante au premier élément
+            idTransactionSelectionnee = -1;
 
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
-    }
-    }//GEN-LAST:event_ModifierRevenueButtonActionPerformed
+            javax.swing.JOptionPane.showMessageDialog(this, "Dépense supprimée avec succès.");
+        }
+    }//GEN-LAST:event_SupprimerDepenseButtonActionPerformed
 
-    private void ModifierDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierDepenseButtonActionPerformed
-        // TODO Ajouter votre code de gestion ici
-         if (idTransactionSelectionnee == -1 || !"Dépense".equals(typeTransactionSelectionne)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner une dépense dans le tableau pour la modifier.");
-        return;
-    }
 
-    try {
-        String description = DepenseDescriptionField.getText();
-        double montant = Double.parseDouble(DepenseMontantField.getText());
-        java.time.LocalDate date = java.time.LocalDate.of(
-            (Integer) AnneeDepense.getValue(),
-            MoisDepense.getSelectedIndex() + 1,
-            (Integer) JoursDepense.getValue()
-        );
-
-        // --- LIGNE MODIFIÉE ---
-        // Obtenir la catégorie sélectionnée depuis la liste déroulante
-        String categorieName = (String) DepenseCategorieField.getSelectedItem();
-        CategorieDepense categorie = new CategorieDepense(categorieName, "Catégorie de dépense");
-
-        gestionnaireFinance.modifierDepense(idTransactionSelectionnee, description, date, montant, categorie);
-        genererRapport(); // Rafraîchir le tableau
-        javax.swing.JOptionPane.showMessageDialog(this, "Dépense mise à jour avec succès!");
-        idTransactionSelectionnee = -1; // Réinitialiser la sélection
-
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
-    }
-    }//GEN-LAST:event_ModifierDepenseButtonActionPerformed
 
     private void SupprimerRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerRevenueButtonActionPerformed
         // TODO Ajouter votre code de gestion ici
@@ -1124,39 +995,145 @@ public class mainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_SupprimerRevenueButtonActionPerformed
 
-    private void SupprimerDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SupprimerDepenseButtonActionPerformed
-        // TODO Ajouter votre code de gestion ici
-        
-           if (idTransactionSelectionnee == -1 || !"Dépense".equals(typeTransactionSelectionne)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner une dépense dans le tableau pour la supprimer.");
-        return;
-    }
-
-    int confirmation = javax.swing.JOptionPane.showConfirmDialog(
-        this,
-        "Êtes-vous sûr de vouloir supprimer cette dépense ?",
-        "Confirmer la suppression",
-        javax.swing.JOptionPane.YES_NO_OPTION
-    );
-
-    if (confirmation == javax.swing.JOptionPane.YES_OPTION) {
-        gestionnaireFinance.supprimerDepenseParId(idTransactionSelectionnee);
-        genererRapport(); // Rafraîchir le tableau
-
-        // Effacer les champs du formulaire et réinitialiser la sélection
-        DepenseDescriptionField.setText("");
-        DepenseMontantField.setText("");
-        DepenseCategorieField.setSelectedIndex(0); // Réinitialiser la liste déroulante au premier élément
-        idTransactionSelectionnee = -1;
-
-        javax.swing.JOptionPane.showMessageDialog(this, "Dépense supprimée avec succès.");
-    }
-    }//GEN-LAST:event_SupprimerDepenseButtonActionPerformed
-
-    private void ChartFiltreAfficherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChartFiltreAfficherButtonActionPerformed
+    private void AjoutRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjoutRevenueButtonActionPerformed
         // TODO add your handling code here:
-        afficherGraphiqueAnnuel();
-    }//GEN-LAST:event_ChartFiltreAfficherButtonActionPerformed
+               try {
+            String description = RevenueDescriptionField.getText();
+            if (description.trim().isEmpty()) {
+                throw new IllegalArgumentException("La description ne peut pas être vide.");
+            }
+
+            String montantText = RevenueMontantField.getText();
+            double montant;
+            if (montantText.trim().isEmpty()) {
+                throw new IllegalArgumentException("Veuillez entrer un montant.");
+            }
+            try {
+                String cleanText = montantText.replaceAll("[^\\d,.]", "").replace(',', '.');
+                montant = Double.parseDouble(cleanText);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Le montant entré n'est pas un nombre valide.");
+            }
+
+            SourceRevenue source = (SourceRevenue) RevenueSourceField.getSelectedItem();
+
+            int jour = (Integer) JoursRevenue.getValue();
+            int mois = MoisRevenue.getSelectedIndex() + 1;
+            int annee = (Integer) AnneeRevenue.getValue();
+            java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
+
+            gestionnaireFinance.ajouterRevenu(description, dateOperation, montant, source);
+
+            javax.swing.JOptionPane.showMessageDialog(this, "Revenu ajouté avec succès!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            RevenueDescriptionField.setText("");
+            RevenueMontantField.setText("");
+
+        } catch (IllegalArgumentException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur de Saisie", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Une erreur inattendue est survenue: " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_AjoutRevenueButtonActionPerformed
+
+    private void AjoutDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AjoutDepenseButtonActionPerformed
+        // TODO add your handling code here:
+              try {
+            String description = DepenseDescriptionField.getText();
+            if (description.trim().isEmpty()) {
+                throw new IllegalArgumentException("La description ne peut pas être vide.");
+            }
+
+            String montantText = DepenseMontantField.getText();
+            double montant;
+            if (montantText.trim().isEmpty()) {
+                throw new IllegalArgumentException("Veuillez entrer un montant.");
+            }
+            try {
+                String cleanText = montantText.replaceAll("[^\\d,.]", "").replace(',', '.');
+                montant = Double.parseDouble(cleanText);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Le montant entré n'est pas un nombre valide.");
+            }
+
+            CategorieDepense categorie = (CategorieDepense) DepenseCategorieField.getSelectedItem();
+
+            int jour = (Integer) JoursDepense.getValue();
+            int mois = MoisDepense.getSelectedIndex() + 1;
+            int annee = (Integer) AnneeDepense.getValue();
+            java.time.LocalDate dateOperation = java.time.LocalDate.of(annee, mois, jour);
+
+            gestionnaireFinance.ajouterDepense(description, dateOperation, montant, categorie);
+
+            javax.swing.JOptionPane.showMessageDialog(this, "Dépense ajoutée avec succès!", "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            DepenseDescriptionField.setText("");
+            DepenseMontantField.setText("");
+
+        } catch (IllegalArgumentException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur de Saisie", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Une erreur inattendue est survenue: " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+ 
+    }//GEN-LAST:event_AjoutDepenseButtonActionPerformed
+
+    private void ModifierDepenseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierDepenseButtonActionPerformed
+        // TODO add your handling code here:
+                if (idTransactionSelectionnee == -1 || !"Dépense".equals(typeTransactionSelectionne)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner une dépense dans le tableau pour la modifier.");
+            return;
+        }
+
+        try {
+            String description = DepenseDescriptionField.getText();
+            double montant = Double.parseDouble(DepenseMontantField.getText());
+            java.time.LocalDate date = java.time.LocalDate.of(
+                (Integer) AnneeDepense.getValue(),
+                MoisDepense.getSelectedIndex() + 1,
+                (Integer) JoursDepense.getValue()
+            );
+
+            CategorieDepense categorie = (CategorieDepense) DepenseCategorieField.getSelectedItem();
+
+            gestionnaireFinance.modifierDepense(idTransactionSelectionnee, description, date, montant, categorie);
+            genererRapport();
+            javax.swing.JOptionPane.showMessageDialog(this, "Dépense mise à jour avec succès!");
+            idTransactionSelectionnee = -1;
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_ModifierDepenseButtonActionPerformed
+
+    private void ModifierRevenueButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModifierRevenueButtonActionPerformed
+        // TODO add your handling code here:
+               if (idTransactionSelectionnee == -1 || !"Revenu".equals(typeTransactionSelectionne)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Veuillez sélectionner un revenu dans le tableau pour le modifier.");
+            return;
+        }
+
+        try {
+            String description = RevenueDescriptionField.getText();
+            double montant = Double.parseDouble(RevenueMontantField.getText());
+            java.time.LocalDate date = java.time.LocalDate.of(
+                (Integer) AnneeRevenue.getValue(),
+                MoisRevenue.getSelectedIndex() + 1,
+                (Integer) JoursRevenue.getValue()
+            );
+
+            SourceRevenue source = (SourceRevenue) RevenueSourceField.getSelectedItem();
+
+            gestionnaireFinance.modifierRevenue(idTransactionSelectionnee, description, date, montant, source);
+            genererRapport();
+            javax.swing.JOptionPane.showMessageDialog(this, "Revenu mis à jour avec succès!");
+            idTransactionSelectionnee = -1;
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Une erreur s'est produite : " + e.getMessage(), "Erreur", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_ModifierRevenueButtonActionPerformed
 
     
     
@@ -1181,7 +1158,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel ChartFiltreAnneeLabel;
     private javax.swing.JSpinner ChartFiltreAnneeSpinner;
     private javax.swing.JPanel DatePanel;
-    private javax.swing.JComboBox<String> DepenseCategorieField;
+    private javax.swing.JComboBox<CategorieDepense> DepenseCategorieField;
     private javax.swing.JLabel DepenseCategorieLabel;
     private javax.swing.JLabel DepenseDateLabel;
     private javax.swing.JPanel DepenseDatePanel;
@@ -1190,6 +1167,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField DepenseMontantField;
     private javax.swing.JLabel DepenseMontantLabel;
     private javax.swing.JPanel EcranAffichage;
+    private javax.swing.JPanel FiltreRapportPanel;
     private javax.swing.JLabel Footer;
     private javax.swing.JButton GraphButton;
     private javax.swing.JSpinner JoursDepense;
@@ -1209,8 +1187,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> RapportFiltreMoisCombox;
     private javax.swing.JLabel RapportFiltreMoisLabel;
     private javax.swing.JPanel RapportMensuelPanel;
-    private javax.swing.JPanel ReportFilterPanel;
-    private javax.swing.JPanel ReportSummaryPanel;
+    private javax.swing.JPanel RapportNordPanel;
     private javax.swing.JPanel RevenueButtons;
     private javax.swing.JPanel RevenueButtons1;
     private javax.swing.JLabel RevenueDateLabel;
@@ -1218,8 +1195,9 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel RevenueDescriptionLabel;
     private javax.swing.JTextField RevenueMontantField;
     private javax.swing.JLabel RevenueMontantLabel;
-    private javax.swing.JComboBox<String> RevenueSourceField;
+    private javax.swing.JComboBox<SourceRevenue> RevenueSourceField;
     private javax.swing.JLabel RevenueSourceLabel;
+    private javax.swing.JPanel SommaireRapportPanel;
     private javax.swing.JButton SupprimerDepenseButton;
     private javax.swing.JButton SupprimerRevenueButton;
     private javax.swing.JButton TableBordButton;
@@ -1228,13 +1206,12 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel TableauBordPanel;
     private javax.swing.JLabel TotalDepenseLabel;
     private javax.swing.JLabel TotalDepenseMontantLabel;
-    private javax.swing.JPanel TotalExpensesPanel;
+    private javax.swing.JPanel TotalDepensePanel;
     private javax.swing.JLabel TotalRevenueLabel;
     private javax.swing.JLabel TotalRevenueMontantLabel;
     private javax.swing.JPanel TotalRevenuePanel;
     private javax.swing.JLabel WelcomeLabel;
     private javax.swing.JPanel actualChartAreaPanel;
     private javax.swing.JPanel chartFilterPanel;
-    private javax.swing.JPanel reportTopAreaPanel;
     // End of variables declaration//GEN-END:variables
 }

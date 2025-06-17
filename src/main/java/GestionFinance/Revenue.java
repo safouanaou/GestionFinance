@@ -1,6 +1,5 @@
 package GestionFinance;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Classe représentant un revenu dans le système de gestion financière.
@@ -10,41 +9,41 @@ import java.util.List;
 public class Revenue extends GestionDepense {
 
     /** Liste des sources de revenu (ex: salaire, investissement, etc.) */
-    private List<SourceRevenue> sources;
+    private SourceRevenue source;
 
     /**
      * Constructeur pour créer un nouveau revenu
      * @param description Description du revenu
      * @param dateOperation Date du revenu
      * @param montant Montant du revenu
-     * @param sources Liste des sources du revenu
-     * @throws IllegalArgumentException si la liste des sources est null ou vide
+     * @param source Source du revenu
+     * @throws IllegalArgumentException si la source est null
      */
-    public Revenue(String description, LocalDate dateOperation, double montant, List<SourceRevenue> sources) {
+    public Revenue(String description, LocalDate dateOperation, double montant, SourceRevenue source) {
         super(description, dateOperation, montant);
-        if (sources == null || sources.isEmpty()) {
-            throw new IllegalArgumentException("La liste des sources ne doit pas être vide");
+        if (source == null) {
+            throw new IllegalArgumentException("La source ne doit pas être nulle");
         }
-        this.sources = sources;
+        this.source = source;
     }
 
     /**
-     * Récupère la liste des sources de revenu
-     * @return La liste des sources de revenu
+     * Récupère la source de revenu
+     * @return La source de revenu
      */
-    public List<SourceRevenue> getSources() {
-        return sources;
+    public SourceRevenue getSource() {
+        return source;
     }
 
     /**
-     * Modifie la liste des sources de revenu
-     * @param sources Nouvelle liste des sources
-     * @throws IllegalArgumentException si la liste des sources est null ou vide
+     * Modifie la source de revenu
+     * @param source Nouvelle source
+     * @throws IllegalArgumentException si la source est null
      */
-    public void setSources(List<SourceRevenue> sources) {
-        if (sources == null || sources.isEmpty()) {
-            throw new IllegalArgumentException("La liste des sources ne doit pas être vide");
+    public void setSource(SourceRevenue source) {
+        if (source == null) {
+            throw new IllegalArgumentException("La source ne doit pas être nulle");
         }
-        this.sources = sources;
+        this.source = source;
     }
 }

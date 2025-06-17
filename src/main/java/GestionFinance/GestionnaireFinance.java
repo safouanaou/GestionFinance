@@ -17,6 +17,10 @@ public class GestionnaireFinance {
     private List<Revenue> revenus;
     /** Liste des dépenses enregistrées */
     private List<Depense> depenses;
+    /** Liste des catégories de dépenses disponibles */
+    private List<CategorieDepense> categories;
+    /** Liste des sources de revenus disponibles */
+    private List<SourceRevenue> sourcesDeRevenu;
     /** Fichier de stockage des données */
     private static final String FICHIER_DONNEES = "finance.in";
 
@@ -26,6 +30,46 @@ public class GestionnaireFinance {
     public GestionnaireFinance() {
         this.revenus = new ArrayList<>();
         this.depenses = new ArrayList<>();
+        this.categories = new ArrayList<>();
+        this.sourcesDeRevenu = new ArrayList<>();
+        initialiserCategoriesEtSources();
+    }
+
+    /**
+     * Initialise les catégories de dépenses et sources de revenus par défaut
+     */
+    private void initialiserCategoriesEtSources() {
+        // Initialisation des catégories de dépenses
+        categories.add(new CategorieDepense("Nourriture"));
+        categories.add(new CategorieDepense("Transport"));
+        categories.add(new CategorieDepense("Logement"));
+        categories.add(new CategorieDepense("Factures"));
+        categories.add(new CategorieDepense("Loisirs"));
+        categories.add(new CategorieDepense("Santé"));
+        categories.add(new CategorieDepense("Autre"));
+
+        // Initialisation des sources de revenus
+        sourcesDeRevenu.add(new SourceRevenue("Salaire"));
+        sourcesDeRevenu.add(new SourceRevenue("Freelance"));
+        sourcesDeRevenu.add(new SourceRevenue("Investissements"));
+        sourcesDeRevenu.add(new SourceRevenue("Cadeaux"));
+        sourcesDeRevenu.add(new SourceRevenue("Autre"));
+    }
+
+    /**
+     * Récupère la liste des catégories de dépenses
+     * @return Copie de la liste des catégories
+     */
+    public List<CategorieDepense> getCategories() {
+        return new ArrayList<>(this.categories);
+    }
+
+    /**
+     * Récupère la liste des sources de revenus
+     * @return Copie de la liste des sources
+     */
+    public List<SourceRevenue> getSourcesDeRevenu() {
+        return new ArrayList<>(this.sourcesDeRevenu);
     }
 
     /**
@@ -35,7 +79,7 @@ public class GestionnaireFinance {
      * @param montant Montant du revenu
      * @param source Sources du revenu
      */
-    public void ajouterRevenu(String description, LocalDate dateOperation, double montant, List<SourceRevenue> source) {
+    public void ajouterRevenu(String description, LocalDate dateOperation, double montant, SourceRevenue source) {
         Revenue nouveauRevenu = new Revenue(description, dateOperation, montant, source);
         this.revenus.add(nouveauRevenu);
     }
@@ -138,16 +182,16 @@ public class GestionnaireFinance {
      * @param nouvelleDescription Nouvelle description
      * @param nouvelleDate Nouvelle date
      * @param nouveauMontant Nouveau montant
-     * @param nouvellesSources Nouvelles sources
+     * @param nouvelleSource Nouvelle source
      * @return true si la modification a réussi, false sinon
      */
-    public boolean modifierRevenue(int id, String nouvelleDescription, java.time.LocalDate nouvelleDate, double nouveauMontant, java.util.List<SourceRevenue> nouvellesSources) {
+    public boolean modifierRevenue(int id, String nouvelleDescription, java.time.LocalDate nouvelleDate, double nouveauMontant, SourceRevenue nouvelleSource) {
         for (Revenue r : revenus) {
             if (r.getId() == id) {
                 r.setDescription(nouvelleDescription);
                 r.setDateOperation(nouvelleDate);
                 r.setMontant(nouveauMontant);
-                r.setSources(nouvellesSources);
+                r.setSource(nouvelleSource);
                 return true;
             }
         }
